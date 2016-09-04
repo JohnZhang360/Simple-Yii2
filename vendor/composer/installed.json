@@ -10,7 +10,7 @@
         },
         "dist": {
             "type": "zip",
-            "url": "https://packagist.phpcomposer.com/files/noahbuscher/Macaw/c58100a43223a808135bab57130da911611d0d2a.zip",
+            "url": "https://api.github.com/repos/noahbuscher/Macaw/zipball/c58100a43223a808135bab57130da911611d0d2a",
             "reference": "c58100a43223a808135bab57130da911611d0d2a",
             "shasum": ""
         },
