@@ -4,6 +4,8 @@
  */
 
 use zbsoft\exception\InvalidParamException;
+use zbsoft\exception\InvalidConfigException;
+use zbsoft\di\Container;
 
 defined('ZB_PATH') or define('ZB_PATH', __DIR__);
 
@@ -13,9 +15,26 @@ defined('ZB_PATH') or define('ZB_PATH', __DIR__);
  */
 class Zb
 {
-    public static $classMap = [];
+    /**
+     * Zb的实例
+     * @var \zbsoft\web\Application
+     */
+    public static $app;
 
+    /**
+     * 内置路径别名
+     * @var array
+     */
     public static $aliases = ['@zbsoft' => __DIR__];
+
+    /**
+     * @var Container the dependency injection (DI) container used by [[createObject()]].
+     * You may use [[Container::set()]] to set up the needed dependencies of classes and
+     * their initial property values.
+     * @see createObject()
+     * @see Container
+     */
+    public static $container;
 
     /**
      * 自动加载函数
@@ -128,6 +147,24 @@ class Zb
 
         return $object;
     }
+
+    public static function createObject($type, array $params = [])
+    {
+        if (is_string($type)) {
+            return static::$container->get($type, $params);
+        } elseif (is_array($type) && isset($type['class'])) {
+            $class = $type['class'];
+            unset($type['class']);
+            return static::$container->get($class, $params, $type);
+        } elseif (is_callable($type, true)) {
+            return call_user_func($type, $params);
+        } elseif (is_array($type)) {
+            throw new InvalidConfigException('Object configuration must be an array containing a "class" element.');
+        } else {
+            throw new InvalidConfigException("Unsupported configuration type: " . gettype($type));
+        }
+    }
 }
 
 spl_autoload_register(['Zb', 'autoload'], true, true);
+Zb::$container = new Container();

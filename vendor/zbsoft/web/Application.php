@@ -5,25 +5,27 @@
 
 namespace zbsoft\web;
 
-use NoahBuscher\Macaw\Macaw;
-use zbsoft\base\Object;
-use zbsoft\web\Request;
+use zbsoft\di\ServiceLocator;
 
-class Application extends Object
+class Application extends ServiceLocator
 {
     /**
-     * 默认controller路由
-     * @var string
+     * @var string 默认controller路由
      */
     public $defaultRoute = 'site';
 
     /**
-     * 框架核心类(必须加载)
-     * @return array
+     * @var string 请求路由规则
+     */
+    public $requestedRoute;
+
+    /**
+     * @return array 框架核心类(必须加载)
      */
     public function coreComponents()
     {
         return [
+            'request' => ['class' => 'zbsoft\web\Request'],
             'urlManager' => ['class' => 'zbsoft\web\UrlManager'],
         ];
     }
@@ -51,22 +53,45 @@ class Application extends Object
 
     public function run()
     {
-        $request = new Request();
-        $queryParams = $request->getQueryParams();
+        $resole = $this->getRequest()->resolve();
+        $response = new Response();
+        $response->content = $this->runAction($resole);
+        $response->send();
+    }
 
-        if ($this->enablePrettyUrl) {
-            Macaw::get('fuck', function () {
-                echo "成功！";
-            });
+    /**
+     * 运行请求的controller/action
+     */
+    public function runAction($resole)
+    {
+        return "Hello World";
+    }
 
-            Macaw::get('(:all)', function ($fu) {
-                echo '未匹配到路由<br>' . $fu;
-            });
+    /**
+     * 获取地址管理实例
+     * @return \zbsoft\web\UrlManager the URL manager for this application.
+     */
+    public function getUrlManager()
+    {
+        return $this->get('urlManager');
+    }
 
-            Macaw::dispatch();
-        } else {
-            var_dump($queryParams);
-            exit;
-        }
+    /**
+     * 获取请求实例
+     * @return \zbsoft\web\Request the request component.
+     */
+    public function getRequest()
+    {
+        return $this->get('request');
+    }
+
+    /**
+     * 获取响应实例
+     * @return null|object
+     * @throws \zbsoft\exception\InvalidConfigException
+     */
+    public function getResponse()
+    {
+        return $this->get("response");
     }
 }
