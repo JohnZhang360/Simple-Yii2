@@ -87,7 +87,7 @@ class Application extends ServiceLocator
      */
     public function runAction($resole)
     {
-        return "Hello World";
+        return "Hello Linux";
     }
 
     /**
