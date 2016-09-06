@@ -5,6 +5,7 @@
 
 namespace zbsoft\web;
 
+use Zb;
 use zbsoft\di\ServiceLocator;
 
 class Application extends ServiceLocator
@@ -20,6 +21,11 @@ class Application extends ServiceLocator
     public $requestedRoute;
 
     /**
+     * @var array list of loaded modules indexed by their class names.
+     */
+    public $loadedModules = [];
+
+    /**
      * @return array 框架核心类(必须加载)
      */
     public function coreComponents()
@@ -32,8 +38,25 @@ class Application extends ServiceLocator
 
     public function __construct($config = [])
     {
+        Zb::$app = $this;
+        $this->setInstance($this);
+
         $this->preInit($config);
+
         parent::__construct($config);
+    }
+
+    /**
+     * 设置模块实例
+     * @param $instance
+     */
+    public static function setInstance($instance)
+    {
+        if ($instance === null) {
+            unset(Zb::$app->loadedModules[get_called_class()]);
+        } else {
+            Zb::$app->loadedModules[get_class($instance)] = $instance;
+        }
     }
 
     /**

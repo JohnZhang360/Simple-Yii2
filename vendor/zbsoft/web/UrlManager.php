@@ -22,14 +22,15 @@ class UrlManager
     public function parseRequest($request)
     {
         if ($this->enablePrettyUrl) {
-            //do prettyUrl logical example:site/index
-            return [];
+            $pathInfo = $request->getPathInfo();
+
+            return [$pathInfo, []];
         } else {
             $route = $request->getQueryParam($this->routeParam, '');
             if (is_array($route)) {
                 $route = '';
             }
-            return (string)$route;
+            return [(string)$route, []];
         }
     }
 }

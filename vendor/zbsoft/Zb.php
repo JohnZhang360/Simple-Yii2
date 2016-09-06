@@ -28,11 +28,8 @@ class Zb
     public static $aliases = ['@zbsoft' => __DIR__];
 
     /**
-     * @var Container the dependency injection (DI) container used by [[createObject()]].
-     * You may use [[Container::set()]] to set up the needed dependencies of classes and
-     * their initial property values.
-     * @see createObject()
-     * @see Container
+     * 依赖注入容器
+     * @var
      */
     public static $container;
 
