@@ -5,7 +5,17 @@
 
 namespace zbsoft\web;
 
-class Controller
-{
+use zbsoft\base\Object;
 
+class Controller extends Object
+{
+    /**
+     * 生成模板
+     * @param $template
+     * @param $params
+     */
+    public function render($template, $params = [])
+    {
+
+    }
 }

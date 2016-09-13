@@ -29,7 +29,7 @@ class Zb
 
     /**
      * 依赖注入容器
-     * @var
+     * @var \zbsoft\di\Container
      */
     public static $container;
 
