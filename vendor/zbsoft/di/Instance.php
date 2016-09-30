@@ -7,7 +7,7 @@ namespace zbsoft\di;
 
 use Zb;
 use zbsoft\exception\InvalidConfigException;
-use Zb\di\ServiceLocator;
+use zbsoft\di\ServiceLocator;
 
 /**
  * Instance represents a reference to a named object in a dependency injection (DI) container or a service locator.

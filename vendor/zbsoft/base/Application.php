@@ -3,14 +3,13 @@
  * @link https://github.com/JohnZhang360/zgjian-framework
  */
 
-namespace zbsoft\web;
+namespace zbsoft\base;
 
 use Zb;
-use zbsoft\di\ServiceLocator;
 use zbsoft\exception\InvalidConfigException;
 use zbsoft\exception\InvalidParamException;
 
-class Application extends ServiceLocator
+class Application extends Module
 {
     /**
      * @var string 默认controller路由
@@ -28,14 +27,19 @@ class Application extends ServiceLocator
     public $loadedModules = [];
 
     /**
-     * @var string 默认的controller命名空间
-     */
-    public $controllerNamespace = 'app\\controllers';
-
-    /**
      * @var string 模块根目录
      */
     private $_basePath;
+
+    /**
+     * @var Controller 当前控制器
+     */
+    public $controller;
+
+    /**
+     * @var string 主模块默认控制器命名空间
+     */
+    public $controllerNamespace = 'app\\controllers';
 
     /**
      * @return array 框架核心类(必须加载)
@@ -43,8 +47,8 @@ class Application extends ServiceLocator
     public function coreComponents()
     {
         return [
-            'request' => ['class' => 'zbsoft\web\Request'],
-            'urlManager' => ['class' => 'zbsoft\web\UrlManager'],
+            'request' => ['class' => 'zbsoft\base\Request'],
+            'urlManager' => ['class' => 'zbsoft\base\UrlManager'],
         ];
     }
 
@@ -92,19 +96,6 @@ class Application extends ServiceLocator
     }
 
     /**
-     * 设置模块实例
-     * @param $instance
-     */
-    public static function setInstance($instance)
-    {
-        if ($instance === null) {
-            unset(Zb::$app->loadedModules[get_called_class()]);
-        } else {
-            Zb::$app->loadedModules[get_class($instance)] = $instance;
-        }
-    }
-
-    /**
      * 将核心类预加载到配置变量中
      * @param $config
      * @throws InvalidConfigException
@@ -136,28 +127,8 @@ class Application extends ServiceLocator
     }
 
     /**
-     * 运行请求的controller/action
-     * @param $route
-     * @param $params
-     * @return string
-     */
-    public function runAction($route, $params)
-    {
-        if (empty($route)) {
-            $route = $this->defaultRoute;
-        }
-
-        $route = trim($route, "/");
-        list($controller, $action) = explode("/", $route, 2);
-        $controllerId = $this->controllerNamespace."\\".$controller;
-        Zb::createObject($controllerId);
-
-        return "Hello Linux";
-    }
-
-    /**
      * 获取地址管理实例
-     * @return \zbsoft\web\UrlManager the URL manager for this application.
+     * @return \zbsoft\base\UrlManager the URL manager for this application.
      */
     public function getUrlManager()
     {
@@ -166,7 +137,7 @@ class Application extends ServiceLocator
 
     /**
      * 获取请求实例
-     * @return \zbsoft\web\Request the request component.
+     * @return \zbsoft\base\Request the request component.
      */
     public function getRequest()
     {

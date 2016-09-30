@@ -3,7 +3,7 @@
  * @link https://github.com/JohnZhang360/zgjian-framework
  */
 
-namespace zbsoft\web;
+namespace zbsoft\base;
 
 use Zb;
 use zbsoft\exception\NotFoundHttpException;
@@ -69,7 +69,6 @@ class Request
         if ($this->_url === null) {
             $this->_url = $this->resolveRequestUri();
         }
-
         return $this->_url;
     }
 

@@ -17,7 +17,7 @@ class Zb
 {
     /**
      * Zb的实例
-     * @var \zbsoft\web\Application
+     * @var \zbsoft\base\Application
      */
     public static $app;
 
@@ -141,10 +141,16 @@ class Zb
         foreach ($properties as $name => $value) {
             $object->$name = $value;
         }
-
         return $object;
     }
 
+    /**
+     * $params作为配置项创建对象
+     * @param $type
+     * @param array $params
+     * @return mixed|object
+     * @throws InvalidConfigException
+     */
     public static function createObject($type, array $params = [])
     {
         if (is_string($type)) {

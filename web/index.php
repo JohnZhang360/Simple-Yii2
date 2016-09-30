@@ -13,4 +13,4 @@ require '../vendor/autoload.php';
 $config = require(__DIR__ . '/../config/web.php');
 require(__DIR__."/../vendor/zbsoft/Zb.php");
 
-(new \zbsoft\web\Application($config))->run();
+(new \zbsoft\base\Application($config))->run();

@@ -5,7 +5,7 @@
 
 namespace app\controllers;
 
-use zbsoft\web\Controller;
+use zbsoft\base\Controller;
 
 class SiteController extends Controller
 {

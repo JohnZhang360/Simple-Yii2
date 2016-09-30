@@ -3,9 +3,7 @@
  * @link https://github.com/JohnZhang360/zgjian-framework
  */
 
-namespace zbsoft\web;
-
-use zbsoft\base\Object;
+namespace zbsoft\base;
 
 /**
  * 响应请求

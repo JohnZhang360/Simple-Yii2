@@ -3,12 +3,21 @@
  * @link https://github.com/JohnZhang360/zgjian-framework
  */
 
-namespace zbsoft\web;
-
-use zbsoft\base\Object;
+namespace zbsoft\base;
 
 class Controller extends Object
 {
+    /**
+     * 运行controller里面的action方法
+     * @param $id
+     * @param array $params
+     */
+    public function runAction($id, $params = [])
+    {
+        echo "runAction";
+        exit;
+    }
+
     /**
      * 生成模板
      * @param $template

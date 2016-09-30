@@ -3,7 +3,7 @@
  * @link https://github.com/JohnZhang360/zgjian-framework
  */
 
-namespace zbsoft\web;
+namespace zbsoft\base;
 
 class UrlManager
 {
