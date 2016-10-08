@@ -75,7 +75,7 @@ use zbsoft\UnknownMethodException\UnknownMethodException;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class Object
+class Object implements Configurable
 {
     /**
      * Returns the fully qualified name of this class.

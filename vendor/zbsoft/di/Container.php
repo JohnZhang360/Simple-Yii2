@@ -117,7 +117,7 @@ class Container extends Object
 
 
     /**
-     * Returns an instance of the requested class.
+     * 返回请求类型的实例
      *
      * You may provide constructor parameters (`$params`) and object configurations (`$config`)
      * that will be used during the creation of the instance.
@@ -342,12 +342,10 @@ class Container extends Object
     }
 
     /**
-     * Creates an instance of the specified class.
-     * This method will resolve dependencies of the specified class, instantiate them, and inject
-     * them into the new instance of the specified class.
-     * @param string $class the class name
-     * @param array $params constructor parameters
-     * @param array $config configurations to be applied to the new instance
+     * 根据解析构造函数参数后的参数类实例或者参数默认值来初始化或者注入到$class中的类
+     * @param string $class 类名
+     * @param array $params 构造函数参数
+     * @param array $config 新实例中指定配置项
      * @return object the newly created instance of the specified class
      */
     protected function build($class, $params, $config)
@@ -399,7 +397,7 @@ class Container extends Object
     }
 
     /**
-     * Returns the dependencies of the specified class.
+     * 根据构造函数获取该类的参数默认值或者参数所属类，以便之后实例化
      * @param string $class class name, interface name or alias name
      * @return array the dependencies of the specified class.
      */
@@ -431,7 +429,7 @@ class Container extends Object
     }
 
     /**
-     * Resolves dependencies by replacing them with the actual object instances.
+     * 根据参数依赖类型实例化该依赖类
      * @param array $dependencies the dependencies
      * @param ReflectionClass $reflection the class reflection associated with the dependencies
      * @return array the resolved dependencies
