@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: ASUS
- * Date: 2016/9/30
- * Time: 15:33
- */
+
 namespace zbsoft\base;
 
 use Zb;
@@ -21,21 +16,51 @@ class Module extends ServiceLocator
      * @var string 默认的controller命名空间
      */
     public $controllerNamespace;
-
     /**
      * @var string 默认controller路由
      */
     public $defaultRoute = 'default';
-
     /**
      * @var array 该模块的子模块
      */
     private $_modules = [];
-
     /**
      * @var array 已加载的控制器
      */
     public $controllerMap = [];
+    /**
+     * @var string an ID that uniquely identifies this module among other modules which have the same [[module|parent]].
+     */
+    public $id;
+    /**
+     * @var Module the parent module of this module. Null if this module does not have a parent.
+     */
+    public $module;
+    /**
+     * @var string the root directory that contains layout view files for this module.
+     */
+    private $_layoutPath;
+    /**
+     * @var string the root directory that contains view files for this module
+     */
+    private $_viewPath;
+    /**
+     * @var string the root directory of the module.
+     */
+    private $_basePath;
+
+    /**
+     * Constructor.
+     * @param string $id the ID of this module
+     * @param Module $parent the parent module (if any)
+     * @param array $config name-value pairs that will be used to initialize the object properties
+     */
+    public function __construct($id, $parent = null, $config = [])
+    {
+        $this->id = $id;
+        $this->module = $parent;
+        parent::__construct($config);
+    }
 
     /**
      * 初始化模块
@@ -49,6 +74,17 @@ class Module extends ServiceLocator
                 $this->controllerNamespace = substr($class, 0, $pos) . '\\controllers';
             }
         }
+    }
+
+    /**
+     * 返回模块的标识值
+     * Returns an ID that uniquely identifies this module among all modules within the current application.
+     * Note that if the module is an application, an empty string will be returned.
+     * @return string the unique ID of the module.
+     */
+    public function getUniqueId()
+    {
+        return $this->module ? ltrim($this->module->getUniqueId() . '/' . $this->id, '/') : $this->id;
     }
 
     /**
@@ -78,6 +114,7 @@ class Module extends ServiceLocator
      * 运行请求的controller/action
      * @param $route
      * @param $params
+     * @return mixed
      * @throws InvalidRouteException
      */
     public function runAction($route, $params)
@@ -201,5 +238,31 @@ class Module extends ServiceLocator
         } else {
             return null;
         }
+    }
+
+    /**
+     * 返回*当前模块*的视图路径
+     * @return string the root directory of view files. Defaults to "[[basePath]]/views".
+     */
+    public function getViewPath()
+    {
+        if ($this->_viewPath === null) {
+            $this->_viewPath = $this->getBasePath() . DIRECTORY_SEPARATOR . 'views';
+        }
+        return $this->_viewPath;
+    }
+
+    /**
+     * 获取*当前模块*中的根路径
+     * @return string the root directory of the module.
+     */
+    public function getBasePath()
+    {
+        if ($this->_basePath === null) {
+            $class = new \ReflectionClass($this);
+            $this->_basePath = dirname($class->getFileName());
+        }
+
+        return $this->_basePath;
     }
 }

@@ -8,6 +8,8 @@ namespace zbsoft\base;
 use Zb;
 use zbsoft\exception\InvalidConfigException;
 use zbsoft\exception\InvalidParamException;
+use zbsoft\exception\InvalidRouteException;
+use zbsoft\exception\NotFoundHttpException;
 
 class Application extends Module
 {
@@ -47,6 +49,7 @@ class Application extends Module
     public function coreComponents()
     {
         return [
+            'view' => ['class' => 'zbsoft\base\View'],
             'request' => ['class' => 'zbsoft\base\Request'],
             'urlManager' => ['class' => 'zbsoft\base\UrlManager'],
         ];
@@ -92,7 +95,7 @@ class Application extends Module
 
         $this->preInit($config);
 
-        parent::__construct($config);
+        Object::__construct($config);
     }
 
     /**
@@ -120,10 +123,14 @@ class Application extends Module
 
     public function run()
     {
-        list($route, $params) = $this->getRequest()->resolve();
-        $response = new Response();
-        $response->content = $this->runAction($route, $params);
-        $response->send();
+        try {
+            list($route, $params) = $this->getRequest()->resolve();
+            $response = new Response();
+            $response->content = $this->runAction($route, $params);
+            $response->send();
+        } catch (InvalidRouteException $e) {
+            throw new NotFoundHttpException('Page not found.', $e->getCode(), $e);
+        }
     }
 
     /**
@@ -152,5 +159,14 @@ class Application extends Module
     public function getResponse()
     {
         return $this->get("response");
+    }
+
+    /**
+     * 获取视图对象
+     * @return View|\zbsoft\base\View the view application component that is used to render various view files.
+     */
+    public function getView()
+    {
+        return $this->get('view');
     }
 }

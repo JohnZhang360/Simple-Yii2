@@ -9,7 +9,7 @@ namespace zbsoft\exception;
  * 找不到HTTP请求
  * @author JohnZhang360
  */
-class NotFoundHttpException extends \HttpException
+class NotFoundHttpException extends HttpException
 {
     /**
      * Constructor.
