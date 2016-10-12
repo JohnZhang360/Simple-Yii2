@@ -10,5 +10,9 @@
 
 <p><?=$text?></p>
 
+<form method="post">
+    <input type="submit" name="submit" value="提交" />
+</form>
+
 </body>
 </html>

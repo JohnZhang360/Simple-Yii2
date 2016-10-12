@@ -26,7 +26,7 @@ use zbsoft\exception\InvalidConfigException;
  * $locator = new \yii\di\ServiceLocator;
  * $locator->setComponents([
  *     'db' => [
- *         'class' => 'yii\db\Connection',
+ *         'class' => 'zbsoft\db\Connection',
  *         'dsn' => 'sqlite:path/to/file.db',
  *     ],
  *     'cache' => [
@@ -150,7 +150,7 @@ class ServiceLocator extends Object
      *
      * // a configuration array
      * $locator->set('db', [
-     *     'class' => 'yii\db\Connection',
+     *     'class' => 'zbsoft\db\Connection',
      *     'dsn' => 'mysql:host=127.0.0.1;dbname=demo',
      *     'username' => 'root',
      *     'password' => '',
@@ -240,7 +240,7 @@ class ServiceLocator extends Object
      * ```php
      * [
      *     'db' => [
-     *         'class' => 'yii\db\Connection',
+     *         'class' => 'zbsoft\db\Connection',
      *         'dsn' => 'sqlite:path/to/file.db',
      *     ],
      *     'cache' => [

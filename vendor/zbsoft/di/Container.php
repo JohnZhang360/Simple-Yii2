@@ -34,7 +34,7 @@ use zbsoft\base\Object;
  * namespace app\models;
  *
  * use yii\base\Object;
- * use yii\db\Connection;
+ * use zbsoft\db\Connection;
  * use yii\di\Container;
  *
  * interface UserFinderInterface
@@ -69,7 +69,7 @@ use zbsoft\base\Object;
  * }
  *
  * $container = new Container;
- * $container->set('yii\db\Connection', [
+ * $container->set('zbsoft\db\Connection', [
  *     'dsn' => '...',
  * ]);
  * $container->set('app\models\UserFinderInterface', [
@@ -81,7 +81,7 @@ use zbsoft\base\Object;
  *
  * // which is equivalent to:
  *
- * $db = new \yii\db\Connection(['dsn' => '...']);
+ * $db = new \zbsoft\db\Connection(['dsn' => '...']);
  * $finder = new UserFinder($db);
  * $lister = new UserLister($finder);
  * ```
