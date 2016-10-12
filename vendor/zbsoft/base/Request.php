@@ -1,6 +1,6 @@
 <?php
 /**
- * @link https://github.com/JohnZhang360/zgjian-framework
+ * @link https://github.com/JohnZhang360/Simple-Yii2.git
  */
 
 namespace zbsoft\base;

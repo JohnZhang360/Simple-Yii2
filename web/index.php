@@ -1,7 +1,7 @@
 <?php
 /**
  * @desc 入口文件
- * @link https://github.com/JohnZhang360/zgjian-framework
+ * @link https://github.com/JohnZhang360/Simple-Yii2.git
  */
 
 ini_set("display_errors", "On");
