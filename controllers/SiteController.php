@@ -12,15 +12,14 @@ class SiteController extends Controller
 {
     public function actionIndex()
     {
-        if(isset($_POST["submit"])) {
+        if (isset($_POST["submit"])) {
             $postMod = new Post();
-            $postMod->title = "test";
-            $postMod->content = "content";
+            $postMod->title = "test" . time();
+            $postMod->content = "content" . time();
             $postMod->created_at = time();
             $postMod->insert();
-        }else{
-            $postList = Post::find()->all();
-            var_dump($postList);
         }
+        $postList = Post::find()->all();
+        return $this->render("index", ["postList" => $postList]);
     }
 }

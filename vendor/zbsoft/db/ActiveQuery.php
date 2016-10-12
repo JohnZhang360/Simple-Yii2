@@ -200,12 +200,6 @@ class ActiveQuery extends Query
             $this->addInverseRelations($models);
         }
 
-        if (!$this->asArray) {
-            foreach ($models as $model) {
-                $model->afterFind();
-            }
-        }
-
         return $models;
     }
 

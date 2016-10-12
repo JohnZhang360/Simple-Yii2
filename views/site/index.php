@@ -1,5 +1,8 @@
 <?php
-    $text = "PHP TEXT";
+/**
+ * @var \app\models\Post[] $postList
+ */
+$text = "PHP TEXT";
 ?>
 <html>
 <body>
@@ -8,10 +11,16 @@
 
 <p>My first paragraph.</p>
 
-<p><?=$text?></p>
+<p><?= $text ?></p>
+
+<ul>
+    <?php foreach ($postList as $post) { ?>
+        <li><?= $post->title ?></li>
+    <?php } ?>
+</ul>
 
 <form method="post">
-    <input type="submit" name="submit" value="提交" />
+    <input type="submit" name="submit" value="提交"/>
 </form>
 
 </body>

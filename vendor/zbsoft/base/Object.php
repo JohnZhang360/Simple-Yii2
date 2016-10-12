@@ -8,7 +8,7 @@ namespace zbsoft\base;
 use Zb;
 use zbsoft\exception\InvalidCallException;
 use zbsoft\exception\UnknownPropertyException;
-use zbsoft\UnknownMethodException\UnknownMethodException;
+use zbsoft\exception\UnknownMethodException;
 
 /**
  * Object is the base class that implements the *property* feature.

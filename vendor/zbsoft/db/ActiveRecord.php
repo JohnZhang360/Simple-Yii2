@@ -14,7 +14,7 @@ use zbsoft\exception\InvalidParamException;
 use zbsoft\helpers\ArrayHelper;
 use zbsoft\helpers\Inflector;
 use zbsoft\helpers\StringHelper;
-use zbsoft\UnknownMethodException\UnknownMethodException;
+use zbsoft\exception\UnknownMethodException;
 
 /**
  * ActiveRecord is the base class for classes representing relational data in terms of objects.
@@ -354,9 +354,6 @@ class ActiveRecord extends Model
      * This is an internal method meant to be called to create active record objects after
      * fetching data from the database. It is mainly used by [[ActiveQuery]] to populate
      * the query results into active records.
-     *
-     * When calling this method manually you should call [[afterFind()]] on the created
-     * record to trigger the [[EVENT_AFTER_FIND|afterFind Event]].
      *
      * @param ActiveRecord $record the record to be populated. In most cases this will be an instance
      * created by [[instantiate()]] beforehand.
@@ -1242,5 +1239,23 @@ class ActiveRecord extends Model
         } else {
             parent::__set($name, $value);
         }
+    }
+
+    /**
+     * Creates an active record instance.
+     *
+     * This method is called together with [[populateRecord()]] by [[ActiveQuery]].
+     * It is not meant to be used for creating new records directly.
+     *
+     * You may override this method if the instance being created
+     * depends on the row data to be populated into the record.
+     * For example, by creating a record based on the value of a column,
+     * you may implement the so-called single-table inheritance mapping.
+     * @param array $row row data to be populated into the record.
+     * @return static the newly created active record
+     */
+    public static function instantiate($row)
+    {
+        return new static;
     }
 }
