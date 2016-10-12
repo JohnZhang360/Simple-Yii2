@@ -18,7 +18,9 @@ class SiteController extends Controller
             $postMod->content = "content";
             $postMod->created_at = time();
             $postMod->insert();
+        }else{
+            $postList = Post::find()->all();
+            var_dump($postList);
         }
-        return $this->render("index");
     }
 }

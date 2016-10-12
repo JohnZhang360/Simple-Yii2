@@ -687,14 +687,10 @@ class ActiveRecord extends Model
     }
 
     /**
-     * Establishes the relationship between two models.
+     * 两个model建立联系
      *
-     * The relationship is established by setting the foreign key value(s) in one model
-     * to be the corresponding primary key value(s) in the other model.
-     * The model with the foreign key will be saved into database without performing validation.
-     *
-     * If the relationship involves a junction table, a new row will be inserted into the
-     * junction table which contains the primary key values from both models.
+     * 如果通过外键关联,则会给外键赋值,并且会自动保存(不会验证数据),
+     * 如果通过中间表关联,则会在中间表中新增一条关联记录
      *
      * Note that this method requires that the primary key value is not null.
      *
