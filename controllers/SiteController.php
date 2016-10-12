@@ -14,8 +14,8 @@ class SiteController extends Controller
     {
         if(isset($_POST["submit"])) {
             $postMod = new Post();
-            $postMod->title = "zgj";
-            $postMod->content = "zgj content 123";
+            $postMod->title = "test";
+            $postMod->content = "content";
             $postMod->created_at = time();
             $postMod->insert();
         }
