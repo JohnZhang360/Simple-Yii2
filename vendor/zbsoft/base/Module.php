@@ -4,6 +4,7 @@ namespace zbsoft\base;
 
 use Zb;
 use zbsoft\di\ServiceLocator;
+use zbsoft\exception\InvalidParamException;
 use zbsoft\exception\InvalidRouteException;
 
 /**
@@ -48,6 +49,12 @@ class Module extends ServiceLocator
      * @var string the root directory of the module.
      */
     private $_basePath;
+    /**
+     * @var string|boolean the layout that should be applied for views within this module. This refers to a view name
+     * relative to [[layoutPath]]. If this is not set, it means the layout value of the [[module|parent module]]
+     * will be taken. If this is false, layout will be disabled within this module.
+     */
+    public $layout;
 
     /**
      * Constructor.
@@ -264,5 +271,28 @@ class Module extends ServiceLocator
         }
 
         return $this->_basePath;
+    }
+
+    /**
+     * 返回当前模块的布局路径
+     * @return string the root directory of layout files. Defaults to "[[viewPath]]/layouts".
+     */
+    public function getLayoutPath()
+    {
+        if ($this->_layoutPath !== null) {
+            return $this->_layoutPath;
+        } else {
+            return $this->_layoutPath = $this->getViewPath() . DIRECTORY_SEPARATOR . 'layouts';
+        }
+    }
+
+    /**
+     * 设置当前模块的布局路径
+     * @param string $path the root directory or path alias of layout files.
+     * @throws InvalidParamException if the directory is invalid
+     */
+    public function setLayoutPath($path)
+    {
+        $this->_layoutPath = Zb::getAlias($path);
     }
 }

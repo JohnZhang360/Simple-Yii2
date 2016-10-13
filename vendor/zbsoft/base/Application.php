@@ -64,6 +64,11 @@ class Application extends Module
      * @var string the charset currently used for the application.
      */
     public $charset = 'UTF-8';
+    /**
+     * @var string|boolean the layout that should be applied for views in this application. Defaults to 'main'.
+     * If this is false, layout will be disabled.
+     */
+    public $layout = 'main';
 
     /**
      * @return array 框架核心类(必须加载)
@@ -121,7 +126,7 @@ class Application extends Module
     }
 
     /**
-     * 将核心类预加载到配置变量中
+     * 将核心类预加载到配置变量中待初始化
      * @param $config
      * @throws InvalidConfigException
      */
@@ -151,6 +156,16 @@ class Application extends Module
                 $config['components'][$id]['class'] = $component['class'];
             }
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function init()
+    {
+        $request = $this->getRequest();
+        Zb::setAlias('@webroot', dirname($request->getScriptFile()));
+        Zb::setAlias('@web', $request->getBaseUrl());
     }
 
     public function run()
@@ -195,7 +210,7 @@ class Application extends Module
 
     /**
      * 获取视图对象
-     * @return View|\zbsoft\base\View the view application component that is used to render various view files.
+     * @return \zbsoft\base\View the view application component that is used to render various view files.
      */
     public function getView()
     {
@@ -235,5 +250,27 @@ class Application extends Module
     public function getDb()
     {
         return $this->get('db');
+    }
+
+    private $_homeUrl;
+
+    /**
+     * @return string the homepage URL
+     */
+    public function getHomeUrl()
+    {
+        if ($this->_homeUrl === null) {
+            return $this->getRequest()->getBaseUrl() . '/';
+        } else {
+            return $this->_homeUrl;
+        }
+    }
+
+    /**
+     * @param string $value the homepage URL
+     */
+    public function setHomeUrl($value)
+    {
+        $this->_homeUrl = $value;
     }
 }

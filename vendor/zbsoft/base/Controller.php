@@ -7,6 +7,7 @@ namespace zbsoft\base;
 
 use Zb;
 use zbsoft\exception\BadRequestHttpException;
+use zbsoft\exception\InvalidParamException;
 use zbsoft\exception\InvalidRouteException;
 
 class Controller extends Object
@@ -32,6 +33,18 @@ class Controller extends Object
      * @var string the root directory that contains view files for this controller.
      */
     private $_viewPath;
+    /**
+     * @var string|boolean the name of the layout to be applied to this controller's views.
+     * This property mainly affects the behavior of [[render()]].
+     * Defaults to null, meaning the actual layout value should inherit that from [[module]]'s layout value.
+     * If false, no layout will be applied.
+     */
+    public $layout;
+    /**
+     * @var Action the action that is currently being executed. This property will be set
+     * by [[run()]] when it is called by [[Application]] to run an action.
+     */
+    public $action;
 
     /**
      * @param string $id the ID of this controller.
@@ -137,7 +150,7 @@ class Controller extends Object
 
     /**
      * 获取view对象并存到该对象中
-     * @return View|\zbsoft\base\View the view object that can be used to render views or view files.
+     * @return \zbsoft\base\View the view object that can be used to render views or view files.
      */
     public function getView()
     {
@@ -155,7 +168,25 @@ class Controller extends Object
      */
     public function render($view, $params = [])
     {
-        return $this->getView()->render($view, $params, $this);
+        $content = $this->getView()->render($view, $params, $this);
+        return $this->renderContent($content);
+    }
+
+    /**
+     * 返回模板内容
+     * @param string $content the static string being rendered
+     * @return string the rendering result of the layout with the given static string as the `$content` variable.
+     * If the layout is disabled, the string will be returned back.
+     * @since 2.0.1
+     */
+    public function renderContent($content)
+    {
+        $layoutFile = $this->findLayoutFile();
+        if ($layoutFile !== false) {
+            return $this->getView()->renderFile($layoutFile, ['content' => $content]);
+        } else {
+            return $content;
+        }
     }
 
     /**
@@ -168,5 +199,49 @@ class Controller extends Object
             $this->_viewPath = $this->module->getViewPath() . DIRECTORY_SEPARATOR . $this->id;
         }
         return $this->_viewPath;
+    }
+
+    /**
+     * 查找模板文件
+     * @return string|boolean the layout file path, or false if layout is not needed.
+     * Please refer to [[render()]] on how to specify this parameter.
+     * @throws InvalidParamException if an invalid path alias is used to specify the layout.
+     */
+    public function findLayoutFile()
+    {
+        $module = $this->module;
+        if (is_string($this->layout)) {
+            $layout = $this->layout;
+        } elseif ($this->layout === null) {
+            //获取顶端Module的layout设置
+            while ($module !== null && $module->layout === null) {
+                $module = $module->module;
+            }
+            if ($module !== null && is_string($module->layout)) {
+                $layout = $module->layout;
+            }
+        }
+
+        if (!isset($layout)) {
+            return false;
+        }
+
+        $file = $module->getLayoutPath() . DIRECTORY_SEPARATOR . $layout;
+
+        if (pathinfo($file, PATHINFO_EXTENSION) !== '') {
+            return $file;
+        }
+
+        return $file . '.php';
+    }
+
+
+    /**
+     * Returns the route of the current request.
+     * @return string the route (module ID, controller ID and action ID) of the current request.
+     */
+    public function getRoute()
+    {
+        return $this->action !== null ? $this->action->getUniqueId() : $this->getUniqueId();
     }
 }
