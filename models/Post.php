@@ -6,10 +6,13 @@ use zbsoft\db\ActiveRecord;
 /**
  * This is the model class for table "{{%post}}".
  *
- * @property string $id
+ * @property integer $id
  * @property string $title
  * @property string $content
- * @property string $created_at
+ * @property integer $created_at
+ * @property integer $updated_at
+ * @property integer $sort
+ * @property integer $is_show
  */
 class Post extends ActiveRecord
 {
