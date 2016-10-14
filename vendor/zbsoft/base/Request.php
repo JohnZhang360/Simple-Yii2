@@ -9,9 +9,54 @@ use Zb;
 use zbsoft\exception\NotFoundHttpException;
 use zbsoft\exception\InvalidConfigException;
 
-class Request
+
+/**
+ * The web Request class represents an HTTP request
+ *
+ * It encapsulates the $_SERVER variable and resolves its inconsistency among different Web servers.
+ * Also it provides an interface to retrieve request parameters from $_POST, $_GET, $_COOKIES and REST
+ * parameters sent via other HTTP methods like PUT or DELETE.
+ *
+ * Request is configured as an application component in [[\yii\web\Application]] by default.
+ * You can access that instance via `Yii::$app->request`.
+ *
+ * @property string $baseUrl The relative URL for the application.
+ * @property string $hostInfo Schema and hostname part (with port number if needed) of the request URL (e.g.
+ * `http://www.yiiframework.com`), null if can't be obtained from `$_SERVER` and wasn't set.
+ * @property boolean $isAjax Whether this is an AJAX (XMLHttpRequest) request. This property is read-only.
+ * @property boolean $isDelete Whether this is a DELETE request. This property is read-only.
+ * @property boolean $isFlash Whether this is an Adobe Flash or Adobe Flex request. This property is
+ * read-only.
+ * @property boolean $isGet Whether this is a GET request. This property is read-only.
+ * @property boolean $isHead Whether this is a HEAD request. This property is read-only.
+ * @property boolean $isOptions Whether this is a OPTIONS request. This property is read-only.
+ * @property boolean $isPatch Whether this is a PATCH request. This property is read-only.
+ * @property boolean $isPjax Whether this is a PJAX request. This property is read-only.
+ * @property boolean $isPost Whether this is a POST request. This property is read-only.
+ * @property boolean $isPut Whether this is a PUT request. This property is read-only.
+ * @property boolean $isSecureConnection If the request is sent via secure channel (https). This property is
+ * read-only.
+ * @property string $method Request method, such as GET, POST, HEAD, PUT, PATCH, DELETE. The value returned is
+ * turned into upper case. This property is read-only.
+ * @property string $pathInfo Part of the request URL that is after the entry script and before the question
+ * mark. Note, the returned path info is already URL-decoded.
+ * @property integer $port Port number for insecure requests.
+ * @property array $queryParams The request GET parameter values.
+ * @property string $queryString Part of the request URL that is after the question mark. This property is
+ * read-only.
+ * @property string $scriptFile The entry script file path.
+ * @property string $scriptUrl The relative URL of the entry script.
+ * @property integer $securePort Port number for secure requests.
+ * @property string $url The currently requested relative URL. Note that the URI returned is URL-encoded.
+ */
+class Request extends Object
 {
     private $_queryParams;
+    /**
+     * @var string the name of the POST parameter that is used to indicate if a request is a PUT, PATCH or DELETE
+     * request tunneled through POST. Defaults to '_method'.
+     */
+    public $methodParam = '_method';
 
     /**
      * 返回GET参数
@@ -333,5 +378,131 @@ class Request
             $this->_securePort = (int) $value;
             $this->_hostInfo = null;
         }
+    }
+
+    /**
+     * Returns the method of the current request (e.g. GET, POST, HEAD, PUT, PATCH, DELETE).
+     * @return string request method, such as GET, POST, HEAD, PUT, PATCH, DELETE.
+     * The value returned is turned into upper case.
+     */
+    public function getMethod()
+    {
+        if (isset($_POST[$this->methodParam])) {
+            return strtoupper($_POST[$this->methodParam]);
+        }
+
+        if (isset($_SERVER['HTTP_X_HTTP_METHOD_OVERRIDE'])) {
+            return strtoupper($_SERVER['HTTP_X_HTTP_METHOD_OVERRIDE']);
+        }
+
+        if (isset($_SERVER['REQUEST_METHOD'])) {
+            return strtoupper($_SERVER['REQUEST_METHOD']);
+        }
+
+        return 'GET';
+    }
+
+    /**
+     * Returns whether this is a GET request.
+     * @return boolean whether this is a GET request.
+     */
+    public function getIsGet()
+    {
+        return $this->getMethod() === 'GET';
+    }
+
+    /**
+     * Returns whether this is an OPTIONS request.
+     * @return boolean whether this is a OPTIONS request.
+     */
+    public function getIsOptions()
+    {
+        return $this->getMethod() === 'OPTIONS';
+    }
+
+    /**
+     * Returns whether this is a HEAD request.
+     * @return boolean whether this is a HEAD request.
+     */
+    public function getIsHead()
+    {
+        return $this->getMethod() === 'HEAD';
+    }
+
+    /**
+     * Returns whether this is a POST request.
+     * @return boolean whether this is a POST request.
+     */
+    public function getIsPost()
+    {
+        return $this->getMethod() === 'POST';
+    }
+
+    /**
+     * Returns whether this is a DELETE request.
+     * @return boolean whether this is a DELETE request.
+     */
+    public function getIsDelete()
+    {
+        return $this->getMethod() === 'DELETE';
+    }
+
+    /**
+     * Returns whether this is a PUT request.
+     * @return boolean whether this is a PUT request.
+     */
+    public function getIsPut()
+    {
+        return $this->getMethod() === 'PUT';
+    }
+
+    /**
+     * Returns whether this is a PATCH request.
+     * @return boolean whether this is a PATCH request.
+     */
+    public function getIsPatch()
+    {
+        return $this->getMethod() === 'PATCH';
+    }
+
+    /**
+     * Returns whether this is an AJAX (XMLHttpRequest) request.
+     *
+     * Note that jQuery doesn't set the header in case of cross domain
+     * requests: https://stackoverflow.com/questions/8163703/cross-domain-ajax-doesnt-send-x-requested-with-header
+     *
+     * @return boolean whether this is an AJAX (XMLHttpRequest) request.
+     */
+    public function getIsAjax()
+    {
+        return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest';
+    }
+
+    /**
+     * Returns whether this is a PJAX request
+     * @return boolean whether this is a PJAX request
+     */
+    public function getIsPjax()
+    {
+        return $this->getIsAjax() && !empty($_SERVER['HTTP_X_PJAX']);
+    }
+
+    /**
+     * Returns whether this is an Adobe Flash or Flex request.
+     * @return boolean whether this is an Adobe Flash or Adobe Flex request.
+     */
+    public function getIsFlash()
+    {
+        return isset($_SERVER['HTTP_USER_AGENT']) &&
+        (stripos($_SERVER['HTTP_USER_AGENT'], 'Shockwave') !== false || stripos($_SERVER['HTTP_USER_AGENT'], 'Flash') !== false);
+    }
+
+    /**
+     * Returns part of the request URL that is after the question mark.
+     * @return string part of the request URL that is after the question mark
+     */
+    public function getQueryString()
+    {
+        return isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : '';
     }
 }

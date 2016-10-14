@@ -12,6 +12,11 @@ use zbsoft\exception\InvalidParamException;
 class View extends Object
 {
     /**
+     * @var Controller the context under which the [[renderFile()]] method is being invoked.
+     */
+    public $context;
+
+    /**
      * 渲染一个视图
      * 查找视图路径，然后执行视图代码
      *
@@ -23,7 +28,7 @@ class View extends Object
     public function render($view, $params = [], $context = null)
     {
         $viewFile = $this->findViewFile($view, $context);
-        return $this->renderFile($viewFile, $params);
+        return $this->renderFile($viewFile, $params, $context);
     }
 
     /**
@@ -43,11 +48,16 @@ class View extends Object
      *
      * @param string $viewFile the view file. This can be either an absolute file path or an alias of it.
      * @param array $params the parameters (name-value pairs) that will be extracted and made available in the view file.
+     * @param object $context the context that the view should use for rendering the view. If null,
+     * existing [[context]] will be used.
      * @return string the rendering result
      * @throws InvalidParamException if the view file does not exist
      */
-    public function renderFile($viewFile, $params = [])
+    public function renderFile($viewFile, $params = [], $context)
     {
+        if ($context !== null) {
+            $this->context = $context;
+        }
         return $this->renderPhpFile($viewFile, $params);
     }
 

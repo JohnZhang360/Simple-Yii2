@@ -82,6 +82,7 @@ class Controller extends Object
             throw new InvalidRouteException('Unable to resolve the request: ' . $this->getUniqueId() . '/' . $id);
         }
 
+        $this->action = $action;
         // run the action
         return $action->runWithParams($params);
     }
@@ -183,7 +184,7 @@ class Controller extends Object
     {
         $layoutFile = $this->findLayoutFile();
         if ($layoutFile !== false) {
-            return $this->getView()->renderFile($layoutFile, ['content' => $content]);
+            return $this->getView()->renderFile($layoutFile, ['content' => $content], $this);
         } else {
             return $content;
         }
@@ -213,7 +214,7 @@ class Controller extends Object
         if (is_string($this->layout)) {
             $layout = $this->layout;
         } elseif ($this->layout === null) {
-            //获取顶端Module的layout设置
+            //如果当前模块没有layout设置，则获取顶端Module的layout设置
             while ($module !== null && $module->layout === null) {
                 $module = $module->module;
             }
