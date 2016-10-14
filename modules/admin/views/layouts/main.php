@@ -15,7 +15,7 @@ use zbsoft\helpers\Url;
     <title>Blog - Zhang Guangjian</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="<?=Url::to("/dist/css/bootstrap.min.css")?>" rel="stylesheet">
+    <link href="<?=Url::to("/css/bootstrap.min.css")?>" rel="stylesheet">
 
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <link href="<?=Url::to("/assets/css/ie10-viewport-bug-workaround.css")?>" rel="stylesheet">
@@ -59,7 +59,7 @@ use zbsoft\helpers\Url;
 <!-- Placed at the end of the document so the pages load faster -->
 <script src="//cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>
 <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
-<script src="<?=Url::to("/dist/js/bootstrap.min.js")?>"></script>
+<script src="<?=Url::to("/js/bootstrap.min.js")?>"></script>
 <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
 <script src="<?=Url::to("/assets/js/ie10-viewport-bug-workaround.js")?>"></script>
 </body>

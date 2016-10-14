@@ -1,0 +1,7 @@
+{
+"version": 3,
+"mappings": "AACA,IAAI;EACF,SAAS,EAFA,IAAI",
+"sources": ["../../sass/admin.scss"],
+"names": [],
+"file": "admin.css"
+}

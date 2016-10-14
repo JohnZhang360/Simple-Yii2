@@ -8,14 +8,18 @@ use zbsoft\base\Controller;
 /**
  * Default controller for the `admin` module
  */
-class DefaultController extends Controller
+class PublicController extends Controller
 {
     /**
      * Renders the index view for the module
      * @return string
      */
-    public function actionIndex()
+    public function actionLogin()
     {
-        return $this->render('index');
+        if(Zb::$app->request->isPost){
+            return $this->renderContent("post data");
+        }else {
+            return $this->render('login');
+        }
     }
 }
