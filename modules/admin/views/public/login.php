@@ -1,7 +1,3 @@
-<?php
-use zbsoft\helpers\Url;
-?>
-<link href="<?=Url::to("/css/signin.css")?>" rel="stylesheet">
 <form class="form-signin">
     <h2 class="form-signin-heading">Please sign in</h2>
     <label for="inputEmail" class="sr-only">Email address</label>

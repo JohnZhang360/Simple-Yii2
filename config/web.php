@@ -8,7 +8,7 @@ $config = [
             'class' => 'zbsoft\caching\FileCache',
         ],
         'urlManager' => [
-            'enablePrettyUrl' => false,
+            'enablePrettyUrl' => true
         ],
         'db' => require(__DIR__ . '/db.php'),
     ],

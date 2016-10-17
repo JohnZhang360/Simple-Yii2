@@ -2,7 +2,8 @@
 use zbsoft\helpers\Url;
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -12,36 +13,21 @@ use zbsoft\helpers\Url;
     <meta name="author" content="">
     <link rel="icon" href="<?=Url::to("/favicon.ico")?>">
 
-    <title>Blog - Zhang Guangjian</title>
-
     <!-- Bootstrap core CSS -->
-    <link href="<?=Url::to("/css/bootstrap.min.css")?>" rel="stylesheet">
-
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <link href="<?=Url::to("/assets/css/ie10-viewport-bug-workaround.css")?>" rel="stylesheet">
-
-    <!-- Custom styles for this template -->
-    <link href="<?=Url::to("/css/blog.css")?>" rel="stylesheet">
-
-    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
-    <!--[if lt IE 9]><script src="<?=Url::to("/assets/js/ie8-responsive-file-warning.js")?>"></script><![endif]-->
-    <script src="<?=Url::to("/assets/js/ie-emulation-modes-warning.js")?>"></script>
-
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-    　　<script src="//cdn.bootcss.com/respond.js/1.4.2/respond.js"></script>
-    　　<script src="//cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-    <![endif]-->
+    <link href="<?=Url::to("/assets/bootstrap/css/bootstrap.min.css")?>" rel="stylesheet">
+    <link href="<?= Url::to("/css/style.min.css") ?>" rel="stylesheet">
 </head>
 
 <body>
 
-<div class="container">
-
-    <div class="blog-header">
-        <h1 class="blog-title">Zhang Guangjian</h1>
+<div class="blog-header">
+    <div class="container">
+        <h1 class="blog-title"><a href="/">Zhang Guangjian</a></h1>
         <p class="lead blog-description">Good Good Code, Day Day Up.</p>
     </div>
+</div>
+
+<div class="container">
 
     <?=$content?>
 
@@ -58,9 +44,13 @@ use zbsoft\helpers\Url;
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->
 <script src="//cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>
-<script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
-<script src="<?=Url::to("/js/bootstrap.min.js")?>"></script>
+<script>window.jQuery || document.write('<script src="<?=Url::to("/assets/bootstrap/js/vendor/jquery.min.js")?>"><\/script>')</script>
+
+<script src="//cdn.bootcss.com/tether/1.3.7/js/tether.min.js"></script>
+<script src="<?=Url::to("/assets/bootstrap/js/bootstrap.min.js")?>"></script>
 <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-<script src="<?=Url::to("/assets/js/ie10-viewport-bug-workaround.js")?>"></script>
+<script src="<?=Url::to("/assets/bootstrap/assets/js/ie10-viewport-bug-workaround.js")?>"></script>
+<script src="<?=Url::to("/js/script.min.js")?>"></script>
 </body>
+
 </html>
