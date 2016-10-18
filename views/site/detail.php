@@ -47,8 +47,8 @@
         </div><!-- /.blog-post -->
 
         <div class="list-group">
-            <button type="button" class="list-group-item">上一篇：Vestibulum id ligula porta felis euismod semper.</button>
-            <button type="button" class="list-group-item">下一篇：Cras mattis consectetur purus sit amet fermentum.</button>
+            <a href="#" class="list-group-item">上一篇：Vestibulum id ligula porta felis euismod semper.</a>
+            <a href="#" class="list-group-item">下一篇：Cras mattis consectetur purus sit amet fermentum.</a>
         </div>
 
     </div><!-- /.blog-main -->

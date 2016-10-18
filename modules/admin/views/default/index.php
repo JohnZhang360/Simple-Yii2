@@ -1,4 +1,7 @@
 <div class="table-responsive">
+    <div class="table-nav">
+        <button type="button" class="btn btn-success">Success</button>
+    </div>
     <table class="table table-bordered table-hover table-striped">
         <thead>
         <tr>
@@ -53,4 +56,25 @@
         </tr>
         </tbody>
     </table>
+    <nav>
+        <ul class="pagination">
+            <li>
+                <a href="#" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                    <span class="sr-only">Previous</span>
+                </a>
+            </li>
+            <li><a href="#">1</a></li>
+            <li><a href="#">2</a></li>
+            <li><a href="#">3</a></li>
+            <li><a href="#">4</a></li>
+            <li><a href="#">5</a></li>
+            <li>
+                <a href="#" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                    <span class="sr-only">Next</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
 </div>

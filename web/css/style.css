@@ -25,19 +25,6 @@ h6, .h6 {
   max-width: 60rem; }
 
 /*
- * Footer
- */
-.blog-footer {
-  padding: 2.5rem 0;
-  color: #999;
-  text-align: center;
-  background-color: #f9f9f9;
-  border-top: .05rem solid #e5e5e5; }
-
-.blog-footer p:last-child {
-  margin-bottom: 0; }
-
-/*
  * Masthead for nav
  */
 .blog-masthead {
@@ -100,6 +87,19 @@ h6, .h6 {
   .blog-title {
     font-size: 3.5rem; } }
 /*
+ * Footer
+ */
+.blog-footer {
+  padding: 2.5rem 0;
+  color: #999;
+  text-align: center;
+  background-color: #f9f9f9;
+  border-top: .05rem solid #e5e5e5; }
+
+.blog-footer p:last-child {
+  margin-bottom: 0; }
+
+/*
  * Main column and sidebar layout
  */
 /* Sidebar modules for boxing content */
@@ -118,10 +118,14 @@ h6, .h6 {
   margin-bottom: 0; }
 
 /* Pagination */
-.blog-pagination {
-  margin-bottom: 4rem; }
+.pager {
+  margin-bottom: 4rem;
+  text-align: left; }
 
-.blog-pagination > .btn {
+.pager > li > a {
+  width: 8rem;
+  padding: .75rem 1.25rem;
+  text-align: center;
   border-radius: 2rem; }
 
 /*

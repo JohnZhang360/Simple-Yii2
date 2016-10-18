@@ -1,9 +1,8 @@
 /*!
- * Bootstrap Docs (https://getbootstrap.com)
- * Copyright 2011-2016 The Bootstrap Authors
- * Copyright 2011-2016 Twitter, Inc.
+ * Bootstrap Docs (http://getbootstrap.com)
+ * Copyright 2011-2014 Twitter, Inc.
  * Licensed under the Creative Commons Attribution 3.0 Unported License. For
- * details, see https://creativecommons.org/licenses/by/3.0/.
+ * details, see http://creativecommons.org/licenses/by/3.0/.
  */
 
 // Dev notes
@@ -14,7 +13,7 @@
 //   Doing so gives us access to the same core utilities provided by Bootstrap.
 //   For example, consistent media queries through those mixins.
 //
-// - Bootstrap's **docs variables** are prefixed with `$bd-`.
+// - Bootstrap's **docs variables** are prefixed with `%bd-`.
 //   These custom colors avoid collision with the components Bootstrap provides.
 //
 // - Classes are prefixed with `.bd-`.
@@ -47,7 +46,6 @@ $bd-info:           #5bc0de;
 @import "ads";
 @import "content";
 @import "page-header";
-@import "skiplink";
 @import "sidebar";
 @import "footer";
 @import "component-examples";
@@ -58,7 +56,7 @@ $bd-info:           #5bc0de;
 @import "team";
 @import "browser-bugs";
 @import "brand";
-@import "clipboard-js";
+@import "zeroclipboard";
 
 // Load docs dependencies
 @import "syntax";

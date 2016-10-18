@@ -1,16 +1,11 @@
-// scss-lint:disable QualifyingElement
-
 //
 // Grid examples
 //
 
 .bd-example-row {
-  .row + .row {
-    margin-top: 1rem;
-  }
-
   .row {
-    > .col,
+    margin-bottom: 1rem;
+
     > [class^="col-"] {
       padding-top: .75rem;
       padding-bottom: .75rem;
@@ -18,18 +13,6 @@
       border: 1px solid rgba(86,61,124,.2);
     }
   }
-
-  .flex-items-xs-top,
-  .flex-items-xs-middle,
-  .flex-items-xs-bottom {
-    min-height: 6rem;
-    background-color: rgba(255,0,0,.1);
-  }
-}
-
-.bd-example-row-flex-cols .row {
-  min-height: 10rem;
-  background-color: rgba(255,0,0,.1);
 }
 
 
@@ -40,8 +23,8 @@
 .bd-example-container {
   min-width: 16rem;
   max-width: 25rem;
-  margin-right: auto;
   margin-left: auto;
+  margin-right: auto;
 }
 
 .bd-example-container-header {
@@ -84,15 +67,15 @@
   @include clearfix();
 
   @include media-breakpoint-up(sm) {
-    padding: 1.5rem;
+    margin-left: 0;
     margin-right: 0;
     margin-bottom: 0;
-    margin-left: 0;
+    padding: 1.5rem;
     border-width: .2rem;
   }
 
   + .highlight,
-  + .clipboard + .highlight {
+  + .zero-clipboard + .highlight {
     margin-top: 0;
   }
 
@@ -127,10 +110,6 @@
   > .dropdown-menu:first-child {
     position: static;
     display: block;
-  }
-
-  > .form-group:last-child {
-    margin-bottom: 0;
   }
 }
 
@@ -198,7 +177,7 @@
 }
 
 // Navbars
-.bd-example {
+.bd-example  {
   .navbar-fixed-top {
     position: static;
     margin: -1rem -1rem 1rem;
@@ -222,6 +201,11 @@
 .bd-example .pagination {
   margin-top: .5rem;
   margin-bottom: .5rem;
+}
+
+// Pager
+.bd-example > .pager {
+  margin-top: 0;
 }
 
 // Example modals
@@ -269,11 +253,11 @@
 }
 
 // Popovers
-.bd-example-popover-static {
+.bd-example-popover {
   padding-bottom: 1.5rem;
   background-color: #f9f9f9;
 }
-.bd-example-popover-static .popover {
+.bd-example-popover .popover {
   position: relative;
   display: block;
   float: left;
@@ -282,11 +266,7 @@
 }
 
 // Tooltips
-.tooltip-demo a {
-  white-space: nowrap;
-}
-
-.bd-example-tooltip-static .tooltip {
+.bd-example-tooltip .tooltip {
   position: relative;
   display: inline-block;
   margin: 10px 20px;
@@ -303,12 +283,17 @@
 
 // Helpers
 .bd-example > {
+  .center-block:not(img) {
+    max-width: 200px;
+    padding: .5rem;
+    background-color: #eee;
+  }
+
   .bg-primary,
   .bg-success,
   .bg-info,
   .bg-warning,
-  .bg-danger,
-  .bg-inverse {
+  .bg-danger {
     &:not(.navbar) {
       padding: .5rem;
       margin-top: .5rem;
@@ -324,7 +309,7 @@
 
 .highlight {
   padding: 1rem;
-  margin: 1rem (-$grid-gutter-width-base / 2);
+  margin: 1rem -1rem;
   background-color: #f7f7f9;
 
   @include media-breakpoint-up(sm) {
@@ -343,4 +328,16 @@
 .highlight pre code {
   font-size: inherit;
   color: $gray-dark; // Effectively the base text color
+}
+
+
+// Pseudo focus
+//
+// Custom `:focus` state for showing how it looks in the docs.
+
+#focusedInput {
+  border-color: $input-border-focus;
+  outline: 0;
+  outline: thin dotted \9; // IE9
+  box-shadow: 0 0 .5rem $input-box-shadow-focus;
 }

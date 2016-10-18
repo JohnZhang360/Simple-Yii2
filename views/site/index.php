@@ -29,9 +29,11 @@
                 risus.</p>
         </div><!-- /.blog-post -->
 
-        <nav class="blog-pagination">
-            <a class="btn btn-outline-primary" href="#">Older</a>
-            <a class="btn btn-outline-secondary disabled" href="#">Newer</a>
+        <nav>
+            <ul class="pager">
+                <li><a href="#">Older</a></li>
+                <li class="disabled"><a href="#">Newer</a></li>
+            </ul>
         </nav>
 
     </div><!-- /.blog-main -->
