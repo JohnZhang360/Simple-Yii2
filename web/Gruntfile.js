@@ -47,8 +47,11 @@ module.exports = function (grunt) {
         },
         uglify: { // Begin JS Uglify Plugin
             build: {
-                src: ['<%= meta.jsSrcPath %>/*.js'],
-                dest: '<%= meta.jsDeployPath %>/script.min.js'
+                expand: true,
+                cwd: '<%= meta.jsSrcPath %>',
+                src: ['*.js'],
+                dest: '<%= meta.jsDeployPath %>',
+                ext: '.min.js'
             }
         },
         watch: { // Compile everything into one task with Watch Plugin
