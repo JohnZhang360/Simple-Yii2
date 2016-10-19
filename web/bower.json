@@ -1,0 +1,25 @@
+{
+  "name": "Simple-Yii2",
+  "description": "Simple-Yii2 client",
+  "main": "",
+  "authors": [
+    "guang-zhang"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/JohnZhang360/Simple-Yii2",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "editor.md": "^1.5.0",
+    "bootstrap": "4.0.0-alpha",
+    "tether": "^1.3.7",
+    "jquery-validation": "^1.15.1",
+    "perfect-scrollbar": "^0.6.13"
+  }
+}

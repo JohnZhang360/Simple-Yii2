@@ -14,7 +14,7 @@ use zbsoft\helpers\Url;
     <link rel="icon" href="<?=Url::to("/favicon.ico")?>">
 
     <!-- Bootstrap core CSS -->
-    <link href="<?=Url::to("/assets/bootstrap/css/bootstrap.min.css")?>" rel="stylesheet">
+    <link href="<?=Url::to("/bower_components/bootstrap/dist/css/bootstrap.min.css")?>" rel="stylesheet">
     <link href="<?= Url::to("/css/style.min.css") ?>" rel="stylesheet">
 </head>
 
@@ -43,13 +43,11 @@ use zbsoft\helpers\Url;
 <!-- Bootstrap core JavaScript
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->
-<script src="//cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>
-<script>window.jQuery || document.write('<script src="<?=Url::to("/assets/bootstrap/js/vendor/jquery.min.js")?>"><\/script>')</script>
+<script src="<?=Url::to("/bower_components/jquery/dist/jquery.min.js")?>"></script>
+<script>window.jQuery || document.write('<script src="<?=Url::to("/bower_components/bootstrap/dist/js/vendor/jquery.min.js")?>"><\/script>')</script>
 
-<script src="//cdn.bootcss.com/tether/1.3.7/js/tether.min.js"></script>
-<script src="<?=Url::to("/assets/bootstrap/js/bootstrap.min.js")?>"></script>
-<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-<script src="<?=Url::to("/assets/bootstrap/assets/js/ie10-viewport-bug-workaround.js")?>"></script>
+<script src="<?=Url::to("/bower_components/tether/dist/js/tether.min.js")?>"></script>
+<script src="<?=Url::to("/bower_components/bootstrap/dist/js/bootstrap.min.js")?>"></script>
 <script src="<?=Url::to("/js/script.min.js")?>"></script>
 </body>
 

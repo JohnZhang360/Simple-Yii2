@@ -16,6 +16,9 @@ use zbsoft\db\ActiveRecord;
  */
 class Post extends ActiveRecord
 {
+    const IS_SHOW_YES = 1;
+    const IS_SHOW_NO = 0;
+
     /**
      * @inheritdoc
      */

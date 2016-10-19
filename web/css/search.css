@@ -21,8 +21,7 @@ footer {
   padding: 0; }
 
 .list-nav .sidebar-offcanvas {
-  overflow-y: scroll;
-  overflow-x: hidden; }
+  position: relative; }
 
 .nav-content {
   padding: 0;
@@ -34,13 +33,21 @@ footer {
   top: 0;
   z-index: 999; }
 
+.list-group {
+  text-align: center; }
+
 .list-group-item {
   border-bottom: none;
-  border-top: none; }
+  border-top: none;
+  padding: .75rem .5rem; }
 
 .list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
   background-color: #06b04f;
   border-color: #06b04f; }
+
+.list-group-item > img {
+  width: 1rem;
+  margin-right: .3rem; }
 
 /*
  * toggler
@@ -72,17 +79,11 @@ footer {
 
 .glyphicon {
   position: relative;
-  top: 1px;
   display: inline-block;
-  font-family: 'Glyphicons Halflings';
-  font-style: normal;
-  font-weight: 400;
-  line-height: 1;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale; }
-
-.nav-toggler > span {
-  padding: 15px 2px; }
+  height: 48px;
+  width: 20px;
+  line-height: 48px;
+  text-align: center; }
 
 .glyphicon-chevron-left:before {
   font-weight: bold;

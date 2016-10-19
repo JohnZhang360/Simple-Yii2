@@ -1,7 +1,7 @@
 {
-  "name": "Simple-Yii2-admin",
+  "name": "Simple-Yii2",
   "version": "0.0.1",
-  "description": "Simple-Yii2 admin client",
+  "description": "Simple-Yii2 client",
   "license": "MIT",
   "devDependencies": {
     "grunt": "~0.4.5",

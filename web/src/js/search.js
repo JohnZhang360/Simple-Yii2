@@ -2,6 +2,9 @@
  * Created by ASUS on 2016/10/19.
  */
 $(document).ready(function () {
+
+    $('#sidebar-nav').perfectScrollbar({minScrollbarLength:100});
+
     $('[data-toggle="offcanvas"]').click(function () {
         $('.row-offcanvas').toggleClass('active');
         var glyphiconObj = $(this).children(".glyphicon");
