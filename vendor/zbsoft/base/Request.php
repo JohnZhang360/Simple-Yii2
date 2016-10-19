@@ -59,6 +59,19 @@ class Request extends Object
     public $methodParam = '_method';
 
     /**
+     * @var CookieCollection Collection of request cookies.
+     */
+    private $_cookies;
+    /**
+     * @var boolean whether cookies should be validated to ensure they are not tampered. Defaults to true.
+     */
+    public $enableCookieValidation = true;
+    /**
+     * @var string a secret key used for cookie validation. This property must be set if [[enableCookieValidation]] is true.
+     */
+    public $cookieValidationKey;
+
+    /**
      * 返回GET参数
      * @return mixed
      */
@@ -504,5 +517,74 @@ class Request extends Object
     public function getQueryString()
     {
         return isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : '';
+    }
+
+    /**
+     * Returns the cookie collection.
+     * Through the returned cookie collection, you may access a cookie using the following syntax:
+     *
+     * ```php
+     * $cookie = $request->cookies['name']
+     * if ($cookie !== null) {
+     *     $value = $cookie->value;
+     * }
+     *
+     * // alternatively
+     * $value = $request->cookies->getValue('name');
+     * ```
+     *
+     * @return CookieCollection the cookie collection.
+     */
+    public function getCookies()
+    {
+        if ($this->_cookies === null) {
+            $this->_cookies = new CookieCollection($this->loadCookies(), [
+                'readOnly' => true,
+            ]);
+        }
+
+        return $this->_cookies;
+    }
+
+    /**
+     * Converts `$_COOKIE` into an array of [[Cookie]].
+     * @return array the cookies obtained from request
+     * @throws InvalidConfigException if [[cookieValidationKey]] is not set when [[enableCookieValidation]] is true
+     */
+    protected function loadCookies()
+    {
+        $cookies = [];
+        if ($this->enableCookieValidation) {
+            if ($this->cookieValidationKey == '') {
+                throw new InvalidConfigException(get_class($this) . '::cookieValidationKey must be configured with a secret key.');
+            }
+            foreach ($_COOKIE as $name => $value) {
+                if (!is_string($value)) {
+                    continue;
+                }
+                $data = Zb::$app->getSecurity()->validateData($value, $this->cookieValidationKey);
+                if ($data === false) {
+                    continue;
+                }
+                $data = @unserialize($data);
+                if (is_array($data) && isset($data[0], $data[1]) && $data[0] === $name) {
+                    $cookies[$name] = new Cookie([
+                        'name' => $name,
+                        'value' => $data[1],
+                        'expire' => null,
+                    ]);
+                }
+            }
+        } else {
+            foreach ($_COOKIE as $name => $value) {
+                $cookies[$name] = new Cookie([
+                    'name' => $name,
+                    'value' => $value,
+                    'expire' => null,
+                ]);
+            }
+        }
+
+        return $cookies;
     }
 }
