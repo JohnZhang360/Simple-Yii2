@@ -9,7 +9,7 @@ use Zb;
 use zbsoft\exception\BadRequestHttpException;
 use zbsoft\exception\InvalidParamException;
 use zbsoft\exception\InvalidRouteException;
-
+use zbsoft\helpers\Url;
 class Controller extends Object
 {
     /**
@@ -244,5 +244,97 @@ class Controller extends Object
     public function getRoute()
     {
         return $this->action !== null ? $this->action->getUniqueId() : $this->getUniqueId();
+    }
+
+    /**
+     * Redirects the browser to the specified URL.
+     * This method is a shortcut to [[Response::redirect()]].
+     *
+     * You can use it in an action by returning the [[Response]] directly:
+     *
+     * ```php
+     * // stop executing this action and redirect to login page
+     * return $this->redirect(['login']);
+     * ```
+     *
+     * @param string|array $url the URL to be redirected to. This can be in one of the following formats:
+     *
+     * - a string representing a URL (e.g. "http://example.com")
+     * - a string representing a URL alias (e.g. "@example.com")
+     * - an array in the format of `[$route, ...name-value pairs...]` (e.g. `['site/index', 'ref' => 1]`)
+     *   [[Url::to()]] will be used to convert the array into a URL.
+     *
+     * Any relative URL will be converted into an absolute one by prepending it with the host info
+     * of the current request.
+     *
+     * @param integer $statusCode the HTTP status code. Defaults to 302.
+     * See <http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html>
+     * for details about HTTP status code
+     * @return Response the current response object
+     */
+    public function redirect($url, $statusCode = 302)
+    {
+        return Zb::$app->getResponse()->redirect(Url::to($url), $statusCode);
+    }
+
+    /**
+     * Redirects the browser to the home page.
+     *
+     * You can use this method in an action by returning the [[Response]] directly:
+     *
+     * ```php
+     * // stop executing this action and redirect to home page
+     * return $this->goHome();
+     * ```
+     *
+     * @return Response the current response object
+     */
+    public function goHome()
+    {
+        return Zb::$app->getResponse()->redirect(Zb::$app->getHomeUrl());
+    }
+
+    /**
+     * Redirects the browser to the last visited page.
+     *
+     * You can use this method in an action by returning the [[Response]] directly:
+     *
+     * ```php
+     * // stop executing this action and redirect to last visited page
+     * return $this->goBack();
+     * ```
+     *
+     * For this function to work you have to [[User::setReturnUrl()|set the return URL]] in appropriate places before.
+     *
+     * @param string|array $defaultUrl the default return URL in case it was not set previously.
+     * If this is null and the return URL was not set previously, [[Application::homeUrl]] will be redirected to.
+     * Please refer to [[User::setReturnUrl()]] on accepted format of the URL.
+     * @return Response the current response object
+     * @see User::getReturnUrl()
+     */
+    public function goBack($defaultUrl = null)
+    {
+        $backUrl = !empty($defaultUrl) ? $defaultUrl : Zb::$app->request->getHeaders()["HTTP_REFERER"];
+        return Zb::$app->getResponse()->redirect($backUrl);
+    }
+
+    /**
+     * Refreshes the current page.
+     * This method is a shortcut to [[Response::refresh()]].
+     *
+     * You can use it in an action by returning the [[Response]] directly:
+     *
+     * ```php
+     * // stop executing this action and refresh the current page
+     * return $this->refresh();
+     * ```
+     *
+     * @param string $anchor the anchor that should be appended to the redirection URL.
+     * Defaults to empty. Make sure the anchor starts with '#' if you want to specify it.
+     * @return Response the response object itself
+     */
+    public function refresh($anchor = '')
+    {
+        return Zb::$app->getResponse()->redirect(Zb::$app->getRequest()->getUrl() . $anchor);
     }
 }

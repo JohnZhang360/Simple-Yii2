@@ -1,6 +1,8 @@
+<?=$this->render("/layouts/menu-nav")?>
 <div class="table-responsive">
     <div class="table-nav">
-        <button type="button" class="btn btn-success">Success</button>
+        <button type="button" class="btn btn-success">Add</button>
+        <button type="button" class="btn btn-warning logout-btn">Logout</button>
     </div>
     <table class="table table-bordered table-hover table-striped">
         <thead>

@@ -48,6 +48,17 @@ use zbsoft\exception\InvalidConfigException;
  * @property string $scriptUrl The relative URL of the entry script.
  * @property integer $securePort Port number for secure requests.
  * @property string $url The currently requested relative URL. Note that the URI returned is URL-encoded.
+ * @property CookieCollection $cookies The cookie collection. This property is read-only.
+ * @property string|null $authPassword The password sent via HTTP authentication, null if the password is not
+ * given. This property is read-only.
+ * @property string $serverName Server name, null if not available. This property is read-only.
+ * @property integer|null $serverPort Server port number, null if not available. This property is read-only.
+ * @property string|null $referrer URL referrer, null if not available. This property is read-only.
+ * @property string|null $userAgent User agent, null if not available. This property is read-only.
+ * @property string|null $userIP User IP address, null if not available. This property is read-only.
+ * @property string|null $userHost User host name, null if not available. This property is read-only.
+ * @property string|null $authUser The username sent via HTTP authentication, null if the username is not
+ * given. This property is read-only.
  */
 class Request extends Object
 {
@@ -586,5 +597,111 @@ class Request extends Object
         }
 
         return $cookies;
+    }
+
+    /**
+     * @var HeaderCollection Collection of request headers.
+     */
+    private $_headers;
+
+    /**
+     * Returns the header collection.
+     * The header collection contains incoming HTTP headers.
+     * @return HeaderCollection the header collection
+     */
+    public function getHeaders()
+    {
+        if ($this->_headers === null) {
+            $this->_headers = new HeaderCollection;
+            if (function_exists('getallheaders')) {
+                $headers = getallheaders();
+            } elseif (function_exists('http_get_request_headers')) {
+                $headers = http_get_request_headers();
+            } else {
+                foreach ($_SERVER as $name => $value) {
+                    if (strncmp($name, 'HTTP_', 5) === 0) {
+                        $name = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))));
+                        $this->_headers->add($name, $value);
+                    }
+                }
+
+                return $this->_headers;
+            }
+            foreach ($headers as $name => $value) {
+                $this->_headers->add($name, $value);
+            }
+        }
+
+        return $this->_headers;
+    }
+
+    /**
+     * Returns the server name.
+     * @return string server name, null if not available
+     */
+    public function getServerName()
+    {
+        return isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : null;
+    }
+
+    /**
+     * Returns the server port number.
+     * @return integer|null server port number, null if not available
+     */
+    public function getServerPort()
+    {
+        return isset($_SERVER['SERVER_PORT']) ? (int) $_SERVER['SERVER_PORT'] : null;
+    }
+
+    /**
+     * Returns the URL referrer.
+     * @return string|null URL referrer, null if not available
+     */
+    public function getReferrer()
+    {
+        return isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : null;
+    }
+
+    /**
+     * Returns the user agent.
+     * @return string|null user agent, null if not available
+     */
+    public function getUserAgent()
+    {
+        return isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : null;
+    }
+
+    /**
+     * Returns the user IP address.
+     * @return string|null user IP address, null if not available
+     */
+    public function getUserIP()
+    {
+        return isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : null;
+    }
+
+    /**
+     * Returns the user host name.
+     * @return string|null user host name, null if not available
+     */
+    public function getUserHost()
+    {
+        return isset($_SERVER['REMOTE_HOST']) ? $_SERVER['REMOTE_HOST'] : null;
+    }
+
+    /**
+     * @return string|null the username sent via HTTP authentication, null if the username is not given
+     */
+    public function getAuthUser()
+    {
+        return isset($_SERVER['PHP_AUTH_USER']) ? $_SERVER['PHP_AUTH_USER'] : null;
+    }
+
+    /**
+     * @return string|null the password sent via HTTP authentication, null if the password is not given
+     */
+    public function getAuthPassword()
+    {
+        return isset($_SERVER['PHP_AUTH_PW']) ? $_SERVER['PHP_AUTH_PW'] : null;
     }
 }

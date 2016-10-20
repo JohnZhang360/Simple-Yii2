@@ -2,9 +2,6 @@
 
 namespace app\modules\admin\controllers;
 
-use Zb;
-use zbsoft\base\Controller;
-
 /**
  * Default controller for the `admin` module
  */

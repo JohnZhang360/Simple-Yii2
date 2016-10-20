@@ -32,6 +32,7 @@ use zbsoft\helpers\Security;
  * [[basePath]].
  * @property View|\zbsoft\base\View $view The view application component that is used to render various view
  * files. This property is read-only.
+ * @property Session $session The session component. This property is read-only.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
@@ -80,8 +81,10 @@ class Application extends Module
         return [
             'view' => ['class' => 'zbsoft\base\View'],
             'request' => ['class' => 'zbsoft\base\Request'],
+            'response' => ['class' => 'zbsoft\base\Response'],
             'urlManager' => ['class' => 'zbsoft\base\UrlManager'],
             'security' => ['class' => 'zbsoft\helpers\Security'],
+            'session' => ['class' => 'zbsoft\base\Session'],
         ];
     }
 
@@ -175,7 +178,7 @@ class Application extends Module
     {
         try {
             list($route, $params) = $this->getRequest()->resolve();
-            $response = new Response();
+            $response = $this->getResponse();
             $response->content = $this->runAction($route, $params);
             $response->send();
         } catch (InvalidRouteException $e) {
@@ -284,5 +287,14 @@ class Application extends Module
     public function getSecurity()
     {
         return $this->get('security');
+    }
+
+    /**
+     * Returns the session component.
+     * @return Session the session component.
+     */
+    public function getSession()
+    {
+        return $this->get('session');
     }
 }

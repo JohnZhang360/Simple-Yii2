@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.5.49, for debian-linux-gnu (x86_64)
+-- MySQL dump 10.13  Distrib 5.5.52, for Win64 (x86)
 --
 -- Host: localhost    Database: zgj_blog
 -- ------------------------------------------------------
--- Server version	5.5.49-0ubuntu0.14.04.1
+-- Server version	5.5.52
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -26,10 +26,10 @@ CREATE TABLE `zb_admin` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
   `username` varchar(100) NOT NULL COMMENT '用户名',
   `password` varchar(255) NOT NULL COMMENT '密码',
-  `login_at` int(11) NOT NULL COMMENT '登录时间',
-  `login_ip` char(15) NOT NULL COMMENT '登录IP',
+  `login_at` int(11) DEFAULT NULL COMMENT '登录时间',
+  `login_ip` char(15) DEFAULT NULL COMMENT '登录IP',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='管理员表';
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='管理员表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -38,6 +38,7 @@ CREATE TABLE `zb_admin` (
 
 LOCK TABLES `zb_admin` WRITE;
 /*!40000 ALTER TABLE `zb_admin` DISABLE KEYS */;
+INSERT INTO `zb_admin` VALUES (1,'zgj','$2y$13$4L25i1P40OdjpgQwdWudKu8ugfvafamH2iSq2zEkP3YJuYbnbKngK',NULL,NULL);
 /*!40000 ALTER TABLE `zb_admin` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -155,4 +156,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-10-19 21:24:35
+-- Dump completed on 2016-10-20 17:22:06

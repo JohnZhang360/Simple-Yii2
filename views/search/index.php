@@ -12,7 +12,7 @@ use zbsoft\helpers\Url;
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="<?= Url::to("/search_favicon.ico") ?>">
-    <title>便捷-搜索</title>
+    <title>ZZ-便捷-搜索</title>
     <!-- Bootstrap core CSS -->
     <link href="<?= Url::to("/bower_components/bootstrap/dist/css/bootstrap.min.css") ?>" rel="stylesheet">
     <!-- Custom styles for this template -->
