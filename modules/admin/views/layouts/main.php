@@ -46,7 +46,7 @@ use zbsoft\helpers\Url;
 <!-- Placed at the end of the document so the pages load faster -->
 <script src="<?=Url::to("/bower_components/tether/dist/js/tether.min.js")?>"></script>
 <script src="<?=Url::to("/bower_components/bootstrap/dist/js/bootstrap.min.js")?>"></script>
-<script src="<?=Url::to("/js/script.min.js")?>"></script>
+<script src="<?=Url::to("/js/admin.min.js")?>"></script>
 </body>
 
 </html>

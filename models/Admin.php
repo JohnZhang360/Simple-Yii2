@@ -15,6 +15,8 @@ use zbsoft\db\ActiveRecord;
  */
 class Admin extends ActiveRecord
 {
+    const LOGIN_SESSION_KEY = "_adminId";
+
     /**
      * @inheritdoc
      */
@@ -29,7 +31,7 @@ class Admin extends ActiveRecord
      */
     public static function isLogin()
     {
-        return Zb::$app->session->has("_adminId") === true;
+        return Zb::$app->session->has(self::LOGIN_SESSION_KEY) === true;
     }
 
     /**
@@ -40,11 +42,20 @@ class Admin extends ActiveRecord
     {
         $this->login_at = time();
         $this->login_ip = Zb::$app->request->userIP;
-        if($this->save()){
-            Zb::$app->session->set("_adminId", $this->id);
+        if ($this->save()) {
+            Zb::$app->session->set(self::LOGIN_SESSION_KEY, $this->id);
             return true;
-        }else{
+        } else {
             return false;
         }
+    }
+
+    /**
+     * 登出操作
+     * @return bool
+     */
+    public static function logout()
+    {
+        return Zb::$app->session->remove(self::LOGIN_SESSION_KEY) !== null;
     }
 }

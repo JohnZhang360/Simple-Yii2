@@ -1,8 +1,14 @@
-<?=$this->render("/layouts/menu-nav")?>
+<?php
+use zbsoft\helpers\Url;
+
+?>
+<?= $this->render("/layouts/menu-nav") ?>
 <div class="table-responsive">
     <div class="table-nav">
         <button type="button" class="btn btn-success">Add</button>
-        <button type="button" class="btn btn-warning logout-btn">Logout</button>
+        <button type="button" class="btn btn-warning logout-btn" id="logout-btn"
+                data-url="<?= Url::toRoute("default/logout") ?>" data-turn="<?= Url::toRoute("public/login") ?>">Logout
+        </button>
     </div>
     <table class="table table-bordered table-hover table-striped">
         <thead>

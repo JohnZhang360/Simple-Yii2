@@ -15,7 +15,11 @@ jQuery(function () {
             jQuery(form).ajaxSubmit({
                 type: "post",
                 success: function (data) {
-                    debugger;
+                    if(data.flag){
+                        window.location.href = $("#formSignin").attr("data-url");
+                    }else{
+                        alert(data.msg);
+                    }
                 }
             });
         }

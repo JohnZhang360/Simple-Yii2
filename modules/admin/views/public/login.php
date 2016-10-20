@@ -4,7 +4,7 @@ use zbsoft\helpers\Url;
 <script src="<?=Url::to("/bower_components/jquery-form/jquery.form.js")?>"></script>
 <script src="<?=Url::to("/bower_components/jquery-validation/dist/jquery.validate.js")?>"></script>
 <script src="<?=Url::to("/js/login.min.js")?>"></script>
-<form id="formSignin" class="form-signin">
+<form id="formSignin" class="form-signin" data-url = "<?=Url::toRoute("default")?>">
     <h2 class="form-signin-heading">Please sign in</h2>
     <label for="inputUsername" class="sr-only">Username</label>
     <input type="text" name="username" id="inputUsername" class="form-control" placeholder="Username"

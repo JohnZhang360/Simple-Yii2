@@ -136,6 +136,7 @@ class BaseUrl
             // empty or an action ID
             return $route === '' ? Zb::$app->controller->getRoute() : Zb::$app->controller->getUniqueId() . '/' . $route;
         } else {
+            Zb::$app->controller->module->getUniqueId();exit;
             // relative to module
             return ltrim(Zb::$app->controller->module->getUniqueId() . '/' . $route, '/');
         }

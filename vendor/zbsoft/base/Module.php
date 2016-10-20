@@ -91,6 +91,8 @@ class Module extends ServiceLocator
      */
     public function getUniqueId()
     {
+        var_dump(ltrim($this->module->getUniqueId() . '/' . $this->id, '/'));
+        echo "<br />";
         return $this->module ? ltrim($this->module->getUniqueId() . '/' . $this->id, '/') : $this->id;
     }
 
@@ -127,6 +129,10 @@ class Module extends ServiceLocator
     public function runAction($route, $params)
     {
         $parts = $this->createController($route);
+        if(method_exists($parts[0]->module, "getUniqueId")){
+            echo $parts[0]->module->getUniqueId();
+        }
+        exit;
         if (is_array($parts)) {
             /* @var $controller Controller */
             list($controller, $actionID) = $parts;
