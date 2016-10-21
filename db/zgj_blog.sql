@@ -38,7 +38,7 @@ CREATE TABLE `zb_admin` (
 
 LOCK TABLES `zb_admin` WRITE;
 /*!40000 ALTER TABLE `zb_admin` DISABLE KEYS */;
-INSERT INTO `zb_admin` VALUES (1,'zgj','$2y$13$4L25i1P40OdjpgQwdWudKu8ugfvafamH2iSq2zEkP3YJuYbnbKngK',NULL,NULL);
+INSERT INTO `zb_admin` VALUES (1,'zgj','$2y$13$4L25i1P40OdjpgQwdWudKu8ugfvafamH2iSq2zEkP3YJuYbnbKngK',1477015768,'127.0.0.1');
 /*!40000 ALTER TABLE `zb_admin` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -57,9 +57,11 @@ CREATE TABLE `zb_post` (
   `updated_at` int(11) NOT NULL COMMENT '更新时间',
   `sort` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
   `is_show` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '是否显示',
+  `views` int(11) NOT NULL DEFAULT '0' COMMENT '浏览数',
+  `is_delete` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '是否删除',
   PRIMARY KEY (`id`),
   KEY `idx_title` (`title`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='文章表';
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='文章表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -68,6 +70,7 @@ CREATE TABLE `zb_post` (
 
 LOCK TABLES `zb_post` WRITE;
 /*!40000 ALTER TABLE `zb_post` DISABLE KEYS */;
+INSERT INTO `zb_post` VALUES (1,'第一篇BLOG','###我的GIT地址：https://github.com/guang-zhang',1477035919,1477044625,255,1,0,0),(2,'八数码问题','# 八数码问题\n\n该分支使用了DBFS算法很大幅度上提升了检索的效率\n\n* 正向初始状态到目标状态,逆向目标状态到初始状态两向扩展\n* 很好的解决了普通广度优先搜索2次幂的数据量递增情况',1477041673,1477043436,255,1,0,0),(3,'jQuery Validate隐藏域验证','Validate插件默认是不验证隐藏的field的。\n\n那我要把隐藏的也要验证怎么办呢?\n\n------------\n\n\n网上有说直接改插件的源码，但是插件更新了又得改回来？？？\n\n既然说到源码，那就看看源码。\n![](http://oexgk58kj.bkt.gdipper.com/20161021175633.png)\n\n这么说它是可配置的！所以呢。\n```\n$(\"#formPost\").validate({\n	ignore: \"\",\n	submitHandler: function (form) {\n	}\n});\n```\n搞定~',1477041772,1477044554,255,1,0,0);
 /*!40000 ALTER TABLE `zb_post` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -156,4 +159,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-10-20 17:22:06
+-- Dump completed on 2016-10-21 18:15:38

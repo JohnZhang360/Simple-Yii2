@@ -81,6 +81,26 @@ class Request extends Object
      * @var string a secret key used for cookie validation. This property must be set if [[enableCookieValidation]] is true.
      */
     public $cookieValidationKey;
+    /**
+     * @var array the parsers for converting the raw HTTP request body into [[bodyParams]].
+     * The array keys are the request `Content-Types`, and the array values are the
+     * corresponding configurations for [[Yii::createObject|creating the parser objects]].
+     * A parser must implement the [[RequestParserInterface]].
+     *
+     * To enable parsing for JSON requests you can use the [[JsonParser]] class like in the following example:
+     *
+     * ```
+     * [
+     *     'application/json' => 'yii\web\JsonParser',
+     * ]
+     * ```
+     *
+     * To register a parser for parsing all request types you can use `'*'` as the array key.
+     * This one will be used as a fallback in case no other types match.
+     *
+     * @see getBodyParams()
+     */
+    public $parsers = [];
 
     /**
      * 返回GET参数
@@ -703,5 +723,186 @@ class Request extends Object
     public function getAuthPassword()
     {
         return isset($_SERVER['PHP_AUTH_PW']) ? $_SERVER['PHP_AUTH_PW'] : null;
+    }
+
+
+    private $_rawBody;
+
+    /**
+     * Returns the raw HTTP request body.
+     * @return string the request body
+     */
+    public function getRawBody()
+    {
+        if ($this->_rawBody === null) {
+            $this->_rawBody = file_get_contents('php://input');
+        }
+
+        return $this->_rawBody;
+    }
+
+    /**
+     * Sets the raw HTTP request body, this method is mainly used by test scripts to simulate raw HTTP requests.
+     * @param string $rawBody the request body
+     */
+    public function setRawBody($rawBody)
+    {
+        $this->_rawBody = $rawBody;
+    }
+
+    /**
+     * Returns request content-type
+     * The Content-Type header field indicates the MIME type of the data
+     * contained in [[getRawBody()]] or, in the case of the HEAD method, the
+     * media type that would have been sent had the request been a GET.
+     * For the MIME-types the user expects in response, see [[acceptableContentTypes]].
+     * @return string request content-type. Null is returned if this information is not available.
+     * @link http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.17
+     * HTTP 1.1 header field definitions
+     */
+    public function getContentType()
+    {
+        if (isset($_SERVER['CONTENT_TYPE'])) {
+            return $_SERVER['CONTENT_TYPE'];
+        } elseif (isset($_SERVER['HTTP_CONTENT_TYPE'])) {
+            //fix bug https://bugs.php.net/bug.php?id=66606
+            return $_SERVER['HTTP_CONTENT_TYPE'];
+        }
+
+        return null;
+    }
+
+    private $_bodyParams;
+
+    /**
+     * Returns the request parameters given in the request body.
+     *
+     * Request parameters are determined using the parsers configured in [[parsers]] property.
+     * If no parsers are configured for the current [[contentType]] it uses the PHP function `mb_parse_str()`
+     * to parse the [[rawBody|request body]].
+     * @return array the request parameters given in the request body.
+     * @throws InvalidConfigException if a registered parser does not implement the [[RequestParserInterface]].
+     * @see getMethod()
+     * @see getBodyParam()
+     * @see setBodyParams()
+     */
+    public function getBodyParams()
+    {
+        if ($this->_bodyParams === null) {
+            if (isset($_POST[$this->methodParam])) {
+                $this->_bodyParams = $_POST;
+                unset($this->_bodyParams[$this->methodParam]);
+                return $this->_bodyParams;
+            }
+
+            $contentType = $this->getContentType();
+            if (($pos = strpos($contentType, ';')) !== false) {
+                // e.g. application/json; charset=UTF-8
+                $contentType = substr($contentType, 0, $pos);
+            }
+
+            if (isset($this->parsers[$contentType])) {
+                $parser = Zb::createObject($this->parsers[$contentType]);
+                if (!($parser instanceof RequestParserInterface)) {
+                    throw new InvalidConfigException("The '$contentType' request parser is invalid. It must implement the yii\\web\\RequestParserInterface.");
+                }
+                $this->_bodyParams = $parser->parse($this->getRawBody(), $contentType);
+            } elseif (isset($this->parsers['*'])) {
+                $parser = Zb::createObject($this->parsers['*']);
+                if (!($parser instanceof RequestParserInterface)) {
+                    throw new InvalidConfigException("The fallback request parser is invalid. It must implement the yii\\web\\RequestParserInterface.");
+                }
+                $this->_bodyParams = $parser->parse($this->getRawBody(), $contentType);
+            } elseif ($this->getMethod() === 'POST') {
+                // PHP has already parsed the body so we have all params in $_POST
+                $this->_bodyParams = $_POST;
+            } else {
+                $this->_bodyParams = [];
+                mb_parse_str($this->getRawBody(), $this->_bodyParams);
+            }
+        }
+
+        return $this->_bodyParams;
+    }
+
+    /**
+     * Sets the request body parameters.
+     * @param array $values the request body parameters (name-value pairs)
+     * @see getBodyParam()
+     * @see getBodyParams()
+     */
+    public function setBodyParams($values)
+    {
+        $this->_bodyParams = $values;
+    }
+
+    /**
+     * Returns the named request body parameter value.
+     * If the parameter does not exist, the second parameter passed to this method will be returned.
+     * @param string $name the parameter name
+     * @param mixed $defaultValue the default parameter value if the parameter does not exist.
+     * @return mixed the parameter value
+     * @see getBodyParams()
+     * @see setBodyParams()
+     */
+    public function getBodyParam($name, $defaultValue = null)
+    {
+        $params = $this->getBodyParams();
+
+        return isset($params[$name]) ? $params[$name] : $defaultValue;
+    }
+
+    /**
+     * Returns POST parameter with a given name. If name isn't specified, returns an array of all POST parameters.
+     *
+     * @param string $name the parameter name
+     * @param mixed $defaultValue the default parameter value if the parameter does not exist.
+     * @return array|mixed
+     */
+    public function post($name = null, $defaultValue = null)
+    {
+        if ($name === null) {
+            return $this->getBodyParams();
+        } else {
+            return $this->getBodyParam($name, $defaultValue);
+        }
+    }
+
+    /**
+     * Sets the request [[queryString]] parameters.
+     * @param array $values the request query parameters (name-value pairs)
+     * @see getQueryParam()
+     * @see getQueryParams()
+     */
+    public function setQueryParams($values)
+    {
+        $this->_queryParams = $values;
+    }
+
+    /**
+     * Returns GET parameter with a given name. If name isn't specified, returns an array of all GET parameters.
+     *
+     * @param string $name the parameter name
+     * @param mixed $defaultValue the default parameter value if the parameter does not exist.
+     * @return array|mixed
+     */
+    public function get($name = null, $defaultValue = null)
+    {
+        if ($name === null) {
+            return $this->getQueryParams();
+        } else {
+            return $this->getQueryParam($name, $defaultValue);
+        }
+    }
+
+    /**
+     * Sets the schema and host part of the application URL.
+     * This setter is provided in case the schema and hostname cannot be determined
+     * on certain Web servers.
+     * @param string $value the schema and host part of the application URL. The trailing slashes will be removed.
+     */
+    public function setHostInfo($value)
+    {
+        $this->_hostInfo = $value === null ? null : rtrim($value, '/');
     }
 }

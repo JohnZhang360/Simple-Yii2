@@ -41,6 +41,10 @@ use zbsoft\base\Object;
 class Model extends Object implements IteratorAggregate, ArrayAccess, Arrayable
 {
     use ArrayableTrait;
+    /**
+     * @var array validation errors (attribute name => array of errors)
+     */
+    private $_errors;
 
     /**
      * Returns the form name that this model class should use.
@@ -301,5 +305,81 @@ class Model extends Object implements IteratorAggregate, ArrayAccess, Arrayable
     public function offsetUnset($offset)
     {
         $this->$offset = null;
+    }
+
+    /**
+     * 返回验证错误
+     */
+    public function getErrors()
+    {
+        return $this->_errors === null ? [] : $this->_errors;
+    }
+
+    /**
+     * 设置验证错误
+     * @param $errors
+     */
+    public function setErrors($errors){
+        $this->_errors = $errors;
+    }
+
+    /**
+     * Removes errors for all attributes or a single attribute.
+     */
+    public function clearErrors()
+    {
+        $this->_errors = [];
+    }
+
+    /**
+     * Returns a value indicating whether there is any validation error.
+     * @return boolean whether there is any error.
+     */
+    public function hasErrors()
+    {
+        return !empty($this->_errors);
+    }
+
+    /**
+     * The name of the default scenario.
+     */
+    const SCENARIO_DEFAULT = 'default';
+
+    /**
+     * @var string current scenario
+     */
+    private $_scenario = self::SCENARIO_DEFAULT;
+
+    /**
+     * Returns the scenario that this model is used in.
+     *
+     * Scenario affects how validation is performed and which attributes can
+     * be massively assigned.
+     *
+     * @return string the scenario that this model is in. Defaults to [[SCENARIO_DEFAULT]].
+     */
+    public function getScenario()
+    {
+        return $this->_scenario;
+    }
+
+    /**
+     * Sets the scenario for the model.
+     * Note that this method does not check if the scenario exists or not.
+     * The method [[validate()]] will perform this check.
+     * @param string $value the scenario that this model is in.
+     */
+    public function setScenario($value)
+    {
+        $this->_scenario = $value;
+    }
+
+    /**
+     * 验证后再保存
+     * @return bool
+     */
+    public function validate()
+    {
+        return true;
     }
 }

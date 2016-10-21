@@ -14,7 +14,9 @@ jQuery(function () {
         submitHandler: function(form) {
             jQuery(form).ajaxSubmit({
                 type: "post",
+                dataType: "json",
                 success: function (data) {
+                    console.log(data);
                     if(data.flag){
                         window.location.href = $("#formSignin").attr("data-url");
                     }else{

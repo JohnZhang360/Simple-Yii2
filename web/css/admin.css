@@ -101,10 +101,11 @@ h6, .h6 {
 /*
  * default
  */
+.blog-title .logout-btn {
+  float: right; }
+
 .table-nav {
   margin: .5rem 0; }
-  .table-nav .logout-btn {
-    float: right; }
 
 /*
  * post

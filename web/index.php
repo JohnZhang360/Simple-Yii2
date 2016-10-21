@@ -4,9 +4,6 @@
  * @link https://github.com/JohnZhang360/Simple-Yii2.git
  */
 
-ini_set("display_errors", "On");
-error_reporting(E_ALL);
-
 // Autoload 自动载入
 require '../vendor/autoload.php';
 

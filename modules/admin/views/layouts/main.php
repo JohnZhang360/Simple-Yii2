@@ -23,7 +23,12 @@ use zbsoft\helpers\Url;
 
 <div class="blog-header">
     <div class="container">
-        <h1 class="blog-title"><a href="/">Zhang Guangjian</a></h1>
+        <h1 class="blog-title">
+            <a href="<?=Url::toRoute(["/admin"])?>">Zhang Guangjian</a>
+            <button type="button" class="btn btn-warning logout-btn" id="logout-btn"
+                    data-url="<?= Url::toRoute("default/logout") ?>" data-turn="<?= Url::toRoute("public/login") ?>">Logout
+            </button>
+        </h1>
         <p class="lead blog-description">Good Good Code, Day Day Up.</p>
     </div>
 </div>

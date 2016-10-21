@@ -152,6 +152,24 @@ class ActiveRecord extends Model
     }
 
     /**
+     * @inheritdoc
+     * @return static|null ActiveRecord instance matching the condition, or `null` if nothing matches.
+     */
+    public static function findOne($condition)
+    {
+        return static::findByCondition($condition)->one();
+    }
+
+    /**
+     * @inheritdoc
+     * @return static[] an array of ActiveRecord instances, or an empty array if nothing matches.
+     */
+    public static function findAll($condition)
+    {
+        return static::findByCondition($condition)->all();
+    }
+
+    /**
      * Creates an [[ActiveQuery]] instance with a given SQL statement.
      *
      * Note that because the SQL statement is already specified, calling additional
@@ -383,10 +401,18 @@ class ActiveRecord extends Model
      *
      * This method performs the following steps in order:
      *
+     * 1. call [[beforeValidate()]] when `$runValidation` is true. If [[beforeValidate()]]
+     *    returns `false`, the rest of the steps will be skipped;
+     * 2. call [[afterValidate()]] when `$runValidation` is true. If validation
+     *    failed, the rest of the steps will be skipped;
      * 3. call [[beforeSave()]]. If [[beforeSave()]] returns `false`,
      *    the rest of the steps will be skipped;
      * 4. insert the record into database. If this fails, it will skip the rest of the steps;
      * 5. call [[afterSave()]];
+     *
+     * In the above step 1, 2, 3 and 5, events [[EVENT_BEFORE_VALIDATE]],
+     * [[EVENT_AFTER_VALIDATE]], [[EVENT_BEFORE_INSERT]], and [[EVENT_AFTER_INSERT]]
+     * will be raised by the corresponding methods.
      *
      * Only the [[dirtyAttributes|changed attribute values]] will be inserted into database.
      *
@@ -402,13 +428,20 @@ class ActiveRecord extends Model
      * $customer->insert();
      * ```
      *
+     * @param boolean $runValidation whether to perform validation (calling [[validate()]])
+     * before saving the record. Defaults to `true`. If the validation fails, the record
+     * will not be saved to the database and this method will return `false`.
      * @param array $attributes list of attributes that need to be saved. Defaults to null,
      * meaning all attributes that are loaded from DB will be saved.
      * @return boolean whether the attributes are valid and the record is inserted successfully.
      * @throws \Exception in case insert failed.
      */
-    public function insert($attributes = null)
+    public function insert($runValidation = true, $attributes = null)
     {
+        if ($runValidation && !$this->validate()) {
+            return false;
+        }
+
         return $this->insertInternal($attributes);
     }
 
@@ -520,7 +553,9 @@ class ActiveRecord extends Model
      *     // update failed
      * }
      * ```
-     *
+     * @param boolean $runValidation whether to perform validation (calling [[validate()]])
+     * before saving the record. Defaults to `true`. If the validation fails, the record
+     * will not be saved to the database and this method will return `false`.
      * @param array $attributeNames list of attributes that need to be saved. Defaults to null,
      * meaning all attributes that are loaded from DB will be saved.
      * @return integer|boolean the number of rows affected, or false if validation fails
@@ -529,8 +564,11 @@ class ActiveRecord extends Model
      * being updated is outdated.
      * @throws \Exception in case update failed.
      */
-    public function update($attributeNames = null)
+    public function update($runValidation = true, $attributeNames = null)
     {
+        if ($runValidation && !$this->validate()) {
+            return false;
+        }
         return $this->updateInternal($attributeNames);
     }
 
@@ -543,6 +581,9 @@ class ActiveRecord extends Model
     protected function updateInternal($attributes = null)
     {
         $values = $this->getDirtyAttributes($attributes);
+        if (empty($values)) {
+            return 0;
+        }
         $condition = $this->getOldPrimaryKey(true);
         $lock = $this->optimisticLock();
         if ($lock !== null) {
@@ -990,17 +1031,19 @@ class ActiveRecord extends Model
      * $customer->email = $email;
      * $customer->save();
      * ```
-     *
+     * @param boolean $runValidation whether to perform validation (calling [[validate()]])
+     * before saving the record. Defaults to `true`. If the validation fails, the record
+     * will not be saved to the database and this method will return `false`.
      * @param array $attributeNames list of attribute names that need to be saved. Defaults to null,
      * meaning all attributes that are loaded from DB will be saved.
      * @return boolean whether the saving succeeded (i.e. no validation errors occurred).
      */
-    public function save($attributeNames = null)
+    public function save($runValidation = true, $attributeNames = null)
     {
         if ($this->getIsNewRecord()) {
-            return $this->insert($attributeNames);
+            return $this->insert($runValidation, $attributeNames);
         } else {
-            return $this->update($attributeNames) !== false;
+            return $this->update($runValidation, $attributeNames) !== false;
         }
     }
 

@@ -28,13 +28,11 @@ class PublicController extends Controller
     {
         if (Zb::$app->request->isPost) {
             $result = ["flag" => false, "msg" => ""];
-
-            /**
-             * @var Admin $adminMod
-             */
-            $adminMod = Admin::find()->where("username=:username", [":username" => $_POST["username"]])->one();
+            $postData = Zb::$app->request->post();
+            /* @var Admin $adminMod */
+            $adminMod = Admin::find()->where("username=:username", [":username" => $postData["username"]])->one();
             if (!empty($adminMod)) {
-                if (Zb::$app->security->validatePassword($_POST["password"], $adminMod->password) && $adminMod->loginSuccess()) {
+                if (Zb::$app->security->validatePassword($postData["password"], $adminMod->password) && $adminMod->loginSuccess()) {
                     $result["flag"] = true;
                 } else {
                     $result["msg"] = "用户名或密码有误";

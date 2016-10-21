@@ -2,11 +2,9 @@
 
 namespace app\modules\admin\controllers;
 
-use app\models\Admin;
+use app\models\Post;
 use Zb;
-use zbsoft\base\Response;
-use zbsoft\exception\NotFoundHttpException;
-use zbsoft\helpers\Url;
+use zbsoft\helpers\Json;
 
 /**
  * Default controller for the `admin` module
@@ -19,33 +17,56 @@ class DefaultController extends BaseController
      */
     public function actionIndex()
     {
-        echo Url::toRoute("default/logout");
-        exit;
-        return $this->render("index");
+        return $this->render("index", Post::getPageList());
     }
 
     /**
      * 发布文章
+     * @param string $pid
      * @return string
      */
-    public function actionPost()
+    public function actionPost($pid = "")
     {
-        return $this->render("post");
+        /* @var Post $postMod */
+        $postMod = Post::findOne($pid);
+        if (empty($postMod)) {
+            $postMod = new Post();
+            $postMod->sort = 255;
+            $postMod->is_show = Post::IS_SHOW_YES;
+        }
+        if (Zb::$app->request->isPost) {
+            $return = ["flag" => false, "msg" => ""];
+            $postAttr = ["title", "content", "sort", "is_show"];
+            foreach ($postAttr as $attr) {
+                $postMod->setAttribute($attr, Zb::$app->request->post($attr));
+            }
+            $postMod->isNewRecord && $postMod->created_at = time();
+            $postMod->updated_at = time();
+            if ($postMod->save()) {
+                $return["flag"] = true;
+            } else {
+                $return["msg"] = json_encode($postMod->errors);
+            }
+            return Json::encode($return);
+        } else {
+            return $this->render("post", ['postMod' => $postMod]);
+        }
     }
 
     /**
-     * 登出
-     * @return array
-     * @throws NotFoundHttpException
+     * 删除文章
+     * @param $pid
+     * @return string
      */
-    public function actionLogout()
+    public function actionDelete($pid)
     {
-        if (Zb::$app->request->isPost) {
-            return ["flag" => Admin::logout()];
+        $postMod = Post::findOne($pid);
+        if ($postMod) {
+            $postMod->is_delete = Post::IS_DELETE_YES;
+            $postMod->update();
+            return $this->redirect(["default/index"]);
         } else {
-            $response = Zb::$app->response;
-            $response->statusCode = 404;
-            throw new NotFoundHttpException(Response::$httpStatuses[404]);
+            return "fail";
         }
     }
 }
