@@ -1,5 +1,6 @@
 <?php
 use zbsoft\helpers\Url;
+use app\models\Admin;
 ?>
 <!DOCTYPE html>
 <html>
@@ -25,9 +26,11 @@ use zbsoft\helpers\Url;
     <div class="container">
         <h1 class="blog-title">
             <a href="<?=Url::toRoute(["/admin"])?>">Zhang Guangjian</a>
-            <button type="button" class="btn btn-warning logout-btn" id="logout-btn"
-                    data-url="<?= Url::toRoute("default/logout") ?>" data-turn="<?= Url::toRoute("public/login") ?>">Logout
-            </button>
+            <?php if(Admin::isLogin()){?>
+                <button type="button" class="btn btn-warning logout-btn" id="logout-btn"
+                        data-url="<?= Url::toRoute("default/logout") ?>" data-turn="<?= Url::toRoute("public/login") ?>">Logout
+                </button>
+            <?php }?>
         </h1>
         <p class="lead blog-description">Good Good Code, Day Day Up.</p>
     </div>

@@ -1,10 +1,11 @@
 <?php
 /* @var \app\models\Post[] $postList */
 /* @var \zbsoft\helpers\Pagination $pager */
+/* @var string $menuActive */
 use zbsoft\helpers\Url;
 
 ?>
-<?= $this->render("/layouts/menu-nav") ?>
+<?= $this->render("/layouts/menu-nav", ["menuActive"=>$menuActive]) ?>
 <div class="table-responsive">
     <div class="table-nav">
         <a href="<?= Url::toRoute("default/post") ?>" role="button" class="btn btn-success">Add</a>

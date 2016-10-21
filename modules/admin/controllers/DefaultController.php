@@ -17,7 +17,7 @@ class DefaultController extends BaseController
      */
     public function actionIndex()
     {
-        return $this->render("index", Post::getPageList());
+        return $this->render("index", array_merge(Post::getPageList(), ["menuActive"=>"post"]));
     }
 
     /**

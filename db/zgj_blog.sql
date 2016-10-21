@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.5.52, for Win64 (x86)
+-- MySQL dump 10.13  Distrib 5.5.49, for debian-linux-gnu (x86_64)
 --
 -- Host: localhost    Database: zgj_blog
 -- ------------------------------------------------------
--- Server version	5.5.52
+-- Server version	5.5.49-0ubuntu0.14.04.1
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -38,7 +38,7 @@ CREATE TABLE `zb_admin` (
 
 LOCK TABLES `zb_admin` WRITE;
 /*!40000 ALTER TABLE `zb_admin` DISABLE KEYS */;
-INSERT INTO `zb_admin` VALUES (1,'zgj','$2y$13$4L25i1P40OdjpgQwdWudKu8ugfvafamH2iSq2zEkP3YJuYbnbKngK',1477015768,'127.0.0.1');
+INSERT INTO `zb_admin` VALUES (1,'zgj','$2y$13$4L25i1P40OdjpgQwdWudKu8ugfvafamH2iSq2zEkP3YJuYbnbKngK',1477060201,'127.0.0.1');
 /*!40000 ALTER TABLE `zb_admin` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -107,8 +107,8 @@ DROP TABLE IF EXISTS `zb_search`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `zb_search` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'id',
-  `title` varchar(255) NOT NULL COMMENT '搜索引擎标题',
-  `pic` varchar(355) NOT NULL COMMENT '图标路径',
+  `title` varchar(50) NOT NULL COMMENT '搜索引擎标题',
+  `pic` varchar(255) NOT NULL COMMENT '图标路径',
   `description` text COMMENT '描述',
   `is_show` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否显示',
   `sort` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
@@ -159,4 +159,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-10-21 18:15:38
+-- Dump completed on 2016-10-21 22:57:10
