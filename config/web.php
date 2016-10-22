@@ -1,5 +1,7 @@
 <?php
 
+$params = require(__DIR__ . '/params.php');
+
 $config = [
     'id' => 'basic',
     'basePath' => dirname(__DIR__),
@@ -21,6 +23,7 @@ $config = [
             'class' => 'app\modules\admin\Module',
         ],
     ],
+    'params' => $params,
 ];
 
 return $config;

@@ -2,6 +2,11 @@
  * Created by root on 16-10-21.
  */
 jQuery(function () {
+    $.validator.addMethod("filetype", function (value, element, param) {
+        var fileType = value.substring(value.lastIndexOf(".") + 1).toLowerCase();
+        return this.optional(element) || $.inArray(fileType, param) != -1;
+    }, $.validator.format("invalid file type"));
+
     $("#formSearch").validate({
         errorLabelContainer: $("div.error-container"),
         ignore: "",
@@ -38,12 +43,12 @@ jQuery(function () {
     });
 
     if ($("#isAdd").val() == 1) {
-        $("#formSearch").rules("add", {
-            "pic": {
-                required:true
-            },
+        $("input[name='pic']").rules("add", {
+            required: true,
+            filetype: ["jpg", "jpeg", "png", "ico", "gif"],
             messages: {
-                "pic": "请上传图片"
+                required: "Please upload image",
+                filetype: "Please upload image"
             }
         });
     }

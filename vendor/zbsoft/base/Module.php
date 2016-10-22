@@ -55,6 +55,10 @@ class Module extends ServiceLocator
      * will be taken. If this is false, layout will be disabled within this module.
      */
     public $layout;
+    /**
+     * @var array custom module parameters (name => value).
+     */
+    public $params = [];
 
     /**
      * Constructor.
