@@ -24,7 +24,7 @@ use zbsoft\helpers\Url;
         <?php foreach ($searchList as $post) { ?>
             <tr>
                 <td><?= $post->title ?></td>
-                <td><img src="<?= $post->pic ?>" width="100" /></td>
+                <td><img src="<?= Zb::$app->params["cdn"]["staticUrl"]."/".$post->pic ?>" width="100" /></td>
                 <td><?= $post->sort ?></td>
                 <td><?= date("Y-m-d H:i:s", $post->created_at) ?></td>
                 <td>

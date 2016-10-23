@@ -16,7 +16,7 @@ use app\models\Search;
         <label for="searchPic" class="sr-only">Search Pic</label>
         <input type="file" name="pic" id="searchPic" class="form-control-file">
         <?php if ($searchMod->pic) { ?>
-            <img src="<?= $searchMod->pic ?>" width="100"/>
+            <img src="<?= Zb::$app->params["cdn"]["staticUrl"]."/".$searchMod->pic ?>" width="100"/>
         <?php } ?>
     </fieldset>
     <fieldset class="form-group">
