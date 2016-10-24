@@ -14,10 +14,18 @@ use app\models\Search;
     </fieldset>
     <fieldset class="form-group">
         <label for="searchPic" class="sr-only">Search Pic</label>
-        <input type="file" name="pic" id="searchPic" class="form-control-file">
+        <input type="text" name="pic" id="searchPic" value="<?= $searchMod->pic ?>" class="form-control"
+               placeholder="Search Pic" autofocus>
         <?php if ($searchMod->pic) { ?>
-            <img src="<?= Zb::$app->params["cdn"]["staticUrl"]."/".$searchMod->pic ?>" width="100"/>
+            <a target="_blank" href="<?= Zb::$app->params["cdn"]["staticUrl"] . "/" . $searchMod->pic ?>">
+                <img class="pic" src="<?= Zb::$app->params["cdn"]["staticUrl"] . "/" . $searchMod->pic ?>" height="32"/>
+            </a>
         <?php } ?>
+    </fieldset>
+    <fieldset class="form-group">
+        <label for="searchLink" class="sr-only">Search Link</label>
+        <input type="text" name="link" id="searchLink" value="<?= $searchMod->link ?>" class="form-control"
+               placeholder="Search link" autofocus>
     </fieldset>
     <fieldset class="form-group">
         <label for="searchDescription" class="sr-only">Search Description</label>
@@ -45,7 +53,23 @@ use app\models\Search;
             </label>
         </div>
     </fieldset>
-    <input type="hidden" id="isAdd" value="<?= empty($searchMod->id) ? 1 : 0 ?>"/>
+    <fieldset class="form-group">
+        <div class="radio">
+            <label>
+                <input type="radio" name="target"
+                       value="<?= Search::TARGET_DEFAULT ?>" <?= $searchMod->target == Search::TARGET_DEFAULT ? "checked" : "" ?>>
+                Default Target
+            </label>
+        </div>
+        <div class="radio">
+            <label>
+                <input type="radio" name="target"
+                       value="<?= Search::TARGET_BLANK ?>" <?= $searchMod->target == Search::TARGET_BLANK ? "checked" : "" ?>>
+                Blank Target
+            </label>
+        </div>
+    </fieldset>
+    <input type="hidden" id="isAdd" value="<?= $searchMod->id == null ? 1 : 0 ?>"/>
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>
 <script src="<?= Url::to("/bower_components/jquery-validation/dist/jquery.validate.js") ?>"></script>

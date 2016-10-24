@@ -22,7 +22,8 @@ h6, .h6 {
  * Override Bootstrap's default container.
  */
 .container {
-  max-width: 60rem; }
+  max-width: 60rem;
+  margin-bottom: 1rem; }
 
 /*
  * Blog name and description
@@ -96,18 +97,17 @@ h6, .h6 {
  */
 .blog-post {
   margin-bottom: 4rem; }
-
-.blog-post-title {
-  margin-bottom: .25rem;
-  font-size: 2.5rem; }
-
-.blog-post-title a {
-  color: #333;
-  text-decoration: none; }
-
-.blog-post-meta {
-  margin-bottom: 1.25rem;
-  color: #999; }
+  .blog-post .blog-post-title {
+    margin-bottom: .25rem;
+    font-size: 2.5rem; }
+  .blog-post .blog-post-title a {
+    color: #333;
+    text-decoration: none; }
+  .blog-post .blog-post-meta {
+    margin-bottom: 1.25rem;
+    color: #999; }
+  .blog-post .blog-markdown-content {
+    display: none; }
 
 /*
  * Blog Detail

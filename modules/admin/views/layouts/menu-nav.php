@@ -10,5 +10,8 @@ use zbsoft\helpers\Url;
         <li class="nav-item">
             <a href="<?=Url::toRoute("search/index")?>" class="nav-link <?=$menuActive=="search"?"active":""?>">搜索</a>
         </li>
+        <li class="nav-item">
+            <a href="<?=Url::toRoute("qiniu/index")?>" class="nav-link <?=$menuActive=="qiniu"?"active":""?>">七牛</a>
+        </li>
     </ul>
 </div>

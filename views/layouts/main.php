@@ -17,6 +17,8 @@ use zbsoft\helpers\Url;
     <!-- Bootstrap core CSS -->
     <link href="<?=Url::to("/bower_components/bootstrap/dist/css/bootstrap.min.css")?>" rel="stylesheet">
     <link href="<?= Url::to("/css/style.min.css") ?>" rel="stylesheet">
+    <script src="<?=Url::to("/bower_components/jquery/dist/jquery.min.js")?>"></script>
+    <script>window.jQuery || document.write('<script src="<?=Url::to("/bower_components/bootstrap/dist/js/vendor/jquery.min.js")?>"><\/script>')</script>
 </head>
 
 <body>
@@ -44,9 +46,6 @@ use zbsoft\helpers\Url;
 <!-- Bootstrap core JavaScript
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->
-<script src="<?=Url::to("/bower_components/jquery/dist/jquery.min.js")?>"></script>
-<script>window.jQuery || document.write('<script src="<?=Url::to("/bower_components/bootstrap/dist/js/vendor/jquery.min.js")?>"><\/script>')</script>
-
 <script src="<?=Url::to("/bower_components/tether/dist/js/tether.min.js")?>"></script>
 <script src="<?=Url::to("/bower_components/bootstrap/dist/js/bootstrap.min.js")?>"></script>
 <script src="<?=Url::to("/js/script.min.js")?>"></script>

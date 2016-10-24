@@ -5,17 +5,23 @@
 
 namespace app\controllers;
 
+use app\models\Post;
 use zbsoft\base\Controller;
+use zbsoft\exception\NotFoundHttpException;
 
 class SiteController extends Controller
 {
     public function actionIndex()
     {
-        return $this->render("index");
+        return $this->render("index", Post::getPageList());
     }
 
-    public function actionDetail()
+    public function actionDetail($pid)
     {
-        return $this->render("detail");
+        $postMod = Post::findOne($pid);
+        if(empty($postMod)){
+            throw new NotFoundHttpException();
+        }
+        return $this->render("detail", ['postMod'=>$postMod]);
     }
 }

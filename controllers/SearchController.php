@@ -5,6 +5,7 @@
 
 namespace app\controllers;
 
+use app\models\Search;
 use zbsoft\base\Controller;
 
 class SearchController extends Controller
@@ -18,6 +19,7 @@ class SearchController extends Controller
 
     public function actionIndex()
     {
-        return $this->render("index");
+        $searchList = Search::find()->orderBy("sort asc, created_at asc")->all();
+        return $this->render("index", ['searchList'=>$searchList]);
     }
 }

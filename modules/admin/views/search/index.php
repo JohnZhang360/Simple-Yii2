@@ -3,6 +3,7 @@
 /* @var \zbsoft\helpers\Pagination $pager */
 /* @var string $menuActive */
 use zbsoft\helpers\Url;
+use zbsoft\helpers\Html;
 
 ?>
 <?= $this->render("/layouts/menu-nav", ["menuActive"=>$menuActive]) ?>
@@ -23,8 +24,12 @@ use zbsoft\helpers\Url;
         <tbody>
         <?php foreach ($searchList as $post) { ?>
             <tr>
-                <td><?= $post->title ?></td>
-                <td><img src="<?= Zb::$app->params["cdn"]["staticUrl"]."/".$post->pic ?>" width="100" /></td>
+                <td><?= Html::encode($post->title) ?></td>
+                <td>
+                    <a target="_blank" href="<?= Zb::$app->params["cdn"]["staticUrl"] . "/" . Html::encode($post->pic) ?>">
+                        <img src="<?= Zb::$app->params["cdn"]["staticUrl"]."/".Html::encode($post->pic) ?>" width="32" />
+                    </a>
+                </td>
                 <td><?= $post->sort ?></td>
                 <td><?= date("Y-m-d H:i:s", $post->created_at) ?></td>
                 <td>

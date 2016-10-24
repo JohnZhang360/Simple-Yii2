@@ -3,7 +3,7 @@
 /* @var \zbsoft\helpers\Pagination $pager */
 /* @var string $menuActive */
 use zbsoft\helpers\Url;
-
+use zbsoft\helpers\Html;
 ?>
 <?= $this->render("/layouts/menu-nav", ["menuActive"=>$menuActive]) ?>
 <div class="table-responsive">
@@ -23,7 +23,7 @@ use zbsoft\helpers\Url;
         <tbody>
         <?php foreach ($postList as $post) { ?>
             <tr>
-                <td><?= $post->title ?></td>
+                <td><?= Html::encode($post->title) ?></td>
                 <td><?= $post->views ?></td>
                 <td><?= $post->sort ?></td>
                 <td><?= date("Y-m-d H:i:s", $post->created_at) ?></td>

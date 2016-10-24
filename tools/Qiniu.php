@@ -30,6 +30,12 @@ class Qiniu
         return self::$instance;
     }
 
+    /**
+     * 获取新实例
+     * @param null $accessKey
+     * @param null $secretKey
+     * @return mixed
+     */
     public static function newInstance($accessKey = null, $secretKey = null)
     {
         $c = __CLASS__;
@@ -75,7 +81,7 @@ class Qiniu
      * @param integer $pageSize 本次列举的条目数
      * @return array
      */
-    public function listFile($listBucket, $prefix = "", $marker, $pageSize)
+    public function listFile($listBucket, $marker = "", $pageSize = 10, $prefix = "")
     {
         $bucketMgr = $this->getBucketManager();
         list($iterms, $marker, $err) = $bucketMgr->listFiles($listBucket, $prefix, $marker, $pageSize);
@@ -90,9 +96,10 @@ class Qiniu
      * 上传文件到空间
      * @param string $filePath 要上传文件的本地路径
      * @param string $bucket 要上传的空间
+     * @param string $prefix 文件前缀
      * @return array
      */
-    public function upload($filePath, $bucket)
+    public function upload($filePath, $bucket, $prefix = "")
     {
         if (!file_exists($filePath)) {
             return ["flag" => false, "error" => "不存在的文件"];
@@ -100,7 +107,8 @@ class Qiniu
 
         $token = $this->getUploadToken($bucket);
         // 上传到七牛后保存的文件名
-        $key = basename($filePath);
+        !empty($prefix) && $prefix = $prefix . "/";
+        $key = $prefix.basename($filePath);
         // 初始化 UploadManager 对象并进行文件的上传。
         $uploadMgr = new UploadManager();
         // 调用 UploadManager 的 putFile 方法进行文件的上传。
@@ -109,6 +117,26 @@ class Qiniu
             return ["flag" => false, "error" => $err];
         } else {
             return ["flag" => true, "ret" => $ret];
+        }
+    }
+
+    /**
+     * 删除空间文件
+     * @param $key
+     * @param $bucket
+     * @return array
+     */
+    public function delete($key, $bucket)
+    {
+        //初始化BucketManager
+        $bucketMgr = $this->getBucketManager();
+        //你要测试的空间， 并且这个key在你空间中存在
+        //删除$bucket 中的文件 $key
+        $err = $bucketMgr->delete($bucket, $key);
+        if ($err !== null) {
+            return ["flag" => false, "error" => $err];
+        } else {
+            return ["flag" => true];
         }
     }
 }

@@ -15,12 +15,16 @@ jQuery(function () {
             jQuery(form).ajaxSubmit({
                 type: "post",
                 dataType: "json",
+                beforeSubmit:function (formData, jqForm, options) {
+                    $("button[type='submit']").attr("disabled", "disabled");
+                },
                 success: function (data) {
                     console.log(data);
                     if(data.flag){
                         window.location.href = $("#formSignin").attr("data-url");
                     }else{
                         alert(data.msg);
+                        $("button[type='submit']").removeAttr("disabled");
                     }
                 }
             });

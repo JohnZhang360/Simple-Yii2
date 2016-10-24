@@ -1,44 +1,37 @@
+<?php
+/* @var \app\models\Post[] $postList */
+/* @var \zbsoft\helpers\Pagination $pager */
+use zbsoft\helpers\Html;
+use zbsoft\helpers\Url;
+
+?>
+<link href="<?= Url::to("/bower_components/editor.md/css/editormd.preview.css") ?>" rel="stylesheet">
 <div class="row">
-
     <div class="col-sm-8 blog-main">
-
-        <div class="blog-post">
-            <h2 class="blog-post-title"><a href="#">第一篇博文</a></h2>
-            <p class="blog-post-meta">2016-10-10</a></p>
-
-            <p>This blog post shows a few different types of content that's supported and styled with Bootstrap.
-                Basic typography, images, and code are all supported.</p>
-        </div><!-- /.blog-post -->
-
-        <div class="blog-post">
-            <h2 class="blog-post-title"><a href="#">第二篇博文</a></h2>
-            <p class="blog-post-meta">2016-10-12</p>
-
-            <p>Cum sociis natoque penatibus et magnis <a href="#">dis parturient montes</a>, nascetur ridiculus mus.
-                Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Sed posuere
-                consectetur est at lobortis. Cras mattis consectetur purus sit amet fermentum.</p>
-        </div><!-- /.blog-post -->
-
-        <div class="blog-post">
-            <h2 class="blog-post-title"><a href="#">第三篇博文</a></h2>
-            <p class="blog-post-meta">2016-10-13</p>
-
-            <p>Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aenean lacinia
-                bibendum nulla sed consectetur. Etiam porta sem malesuada magna mollis euismod. Fusce dapibus,
-                tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet
-                risus.</p>
-        </div><!-- /.blog-post -->
-
-        <nav>
-            <ul class="pager">
-                <li><a href="#">Older</a></li>
-                <li class="disabled"><a href="#">Newer</a></li>
-            </ul>
-        </nav>
-
+        <?php foreach ($postList as $post) { ?>
+            <div class="blog-post">
+                <h2 class="blog-post-title">
+                    <a href="<?= Url::toRoute(["site/detail", "pid" => $post->id]) ?>"><?= Html::encode($post->title) ?></a>
+                </h2>
+                <p class="blog-post-meta"><?= date("Y-m-d", $post->created_at) ?></a></p>
+                <div class="blog-markdown-content"><?=Html::encode($post->content)?></div>
+                <div class="blog-content" id="blogContent<?=$post->id?>"></div>
+            </div><!-- /.blog-post -->
+        <?php } ?>
+        <?php if (!empty($pager->pageCount > 0)) { ?>
+            <nav>
+                <ul class="pager">
+                    <?php foreach ($pager->getLinks() as $key => $link) { ?>
+                        <li><a href="<?= $link ?>"><?= $key ?></a></li>
+                    <?php } ?>
+                </ul>
+            </nav>
+        <?php } ?>
     </div><!-- /.blog-main -->
-
-    <?= $this->render("/layouts/left-nav") ?>
-
+    <?= $this->render("/layouts/right-nav") ?>
 </div><!-- /.row -->
+<script src="<?= Url::to("/bower_components/editor.md/editormd.min.js") ?>"></script>
+<script src="<?= Url::to("/bower_components/editor.md/lib/marked.min.js")?>"></script>
+<script src="<?= Url::to("/bower_components/editor.md/lib/prettify.min.js")?>"></script>
+<script src="<?= Url::to("/js/post-list.min.js") ?>"></script>
 

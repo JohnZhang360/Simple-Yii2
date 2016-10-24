@@ -48,7 +48,7 @@
  * default
  */
 
-.blog-title{
+.blog-title {
   .logout-btn {
     float: right;
   }
@@ -61,6 +61,29 @@
 /*
  * post
  */
-.form-post{
+.form-post {
   margin-bottom: 2rem;
+}
+
+/*
+ * search
+ */
+.form-search {
+  .pic {
+    margin-top: .5rem;
+  }
+}
+
+/*
+ * qiniu
+ */
+.table-qiniu{
+  .pic{
+    max-width: 100%;
+  }
+}
+.form-qiniu {
+  .pic {
+    margin-top: .5rem;
+  }
 }

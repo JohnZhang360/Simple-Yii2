@@ -23,7 +23,7 @@ class SearchController extends BaseController
     }
 
     /**
-     * 发布文章
+     * 发布搜索
      * @param string $pid
      * @return string
      */
@@ -38,41 +38,19 @@ class SearchController extends BaseController
         }
         if (Zb::$app->request->isPost) {
             $return = ["flag" => false, "msg" => ""];
-            $postAttr = ["title", "description", "sort", "is_show"];
+            $postAttr = ["title", "description", "sort", "is_show", "link", "target"];
             foreach ($postAttr as $attr) {
                 $searchMod->setAttribute($attr, Zb::$app->request->post($attr));
             }
 
-            $uploadKey = "pic";
-            $uploadResult = null;
-            if ($_FILES[$uploadKey]["error"] == UPLOAD_ERR_NO_FILE) {
+            $pic = Zb::$app->request->post("pic");
+            if (empty($pic)) {
                 if ($searchMod->isNewRecord) {
-                    $return["msg"] = "Please upload image";
+                    $return["msg"] = "Please enter image key";
                     return Json::encode($return);
                 }
             } else {
-                $upload = new Upload();
-                $uploadResult = $upload->upload($_FILES[$uploadKey]);
-                if (!is_array($uploadResult)) {
-                    $return["msg"] = $uploadResult;
-                    return Json::encode($return);
-                }
-            }
-
-            if ($uploadResult !== null && is_array($uploadResult)) {
-                $fullPath = $uploadResult["savepath"] . $uploadResult["savename"];
-                $qiniuUpload = Qiniu::getInstance()->upload($fullPath, Zb::$app->params["cdn"]["bucket"]);
-                @unlink($fullPath);
-                if ($qiniuUpload["flag"] == false) {
-                    $return["msg"] = json_encode($qiniuUpload["error"]);
-                    return Json::encode($return);
-                } else {
-                    if(!$searchMod->isNewRecord){
-                        //delete remote image...
-
-                    }
-                    $searchMod->pic = $qiniuUpload["ret"]["key"];
-                }
+                $searchMod->pic = trim($pic);
             }
 
             $searchMod->isNewRecord && $searchMod->created_at = time();
@@ -88,7 +66,7 @@ class SearchController extends BaseController
     }
 
     /**
-     * 删除文章
+     * 删除搜索
      * @param $pid
      * @return string
      */
@@ -97,9 +75,7 @@ class SearchController extends BaseController
         $searchMod = Search::findOne($pid);
         if ($searchMod) {
             $searchMod->delete();
-            return $this->redirect(["default/index"]);
-        } else {
-            return "fail";
         }
+        return $this->redirect(["default/index"]);
     }
 }

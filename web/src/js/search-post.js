@@ -2,17 +2,15 @@
  * Created by root on 16-10-21.
  */
 jQuery(function () {
-    $.validator.addMethod("filetype", function (value, element, param) {
-        var fileType = value.substring(value.lastIndexOf(".") + 1).toLowerCase();
-        return this.optional(element) || $.inArray(fileType, param) != -1;
-    }, $.validator.format("invalid file type"));
-
     $("#formSearch").validate({
         errorLabelContainer: $("div.error-container"),
         ignore: "",
         errorElement: "p",
         rules: {
             "title": {
+                required: true
+            },
+            "link": {
                 required: true
             },
             "sort": {
@@ -22,6 +20,7 @@ jQuery(function () {
         },
         messages: {
             "title": "Please enter title",
+            "link": "Please enter link",
             "sort": {
                 required: "Please enter sort",
                 digits: "sort must enter digits"
@@ -49,10 +48,8 @@ jQuery(function () {
     if ($("#isAdd").val() == 1) {
         $("input[name='pic']").rules("add", {
             required: true,
-            filetype: ["jpg", "jpeg", "png", "ico", "gif"],
             messages: {
-                required: "Please upload image",
-                filetype: "Please upload image"
+                required: "Please enter image key"
             }
         });
     }

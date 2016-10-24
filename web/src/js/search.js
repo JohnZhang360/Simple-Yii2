@@ -17,10 +17,16 @@ $(document).ready(function () {
 
     $("#sidebar-nav .list-group-item").click(function () {
         var data_href= $(this).attr("data-href");
-        if(data_href != "") {
+        if(data_href != undefined && data_href != "") {
             $("#sidebar-nav .list-group-item").removeClass("active");
             $(this).addClass("active");
             $("#nav-iframe").attr("src", data_href);
         }
     });
+
+    var firstNavObj = $("#sidebar-nav .list-group-item").first();
+    if(firstNavObj){
+        $("#nav-iframe").attr("src", firstNavObj.attr("data-href"));
+        firstNavObj.addClass("active");
+    }
 });
