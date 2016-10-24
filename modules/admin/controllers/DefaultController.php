@@ -17,7 +17,7 @@ class DefaultController extends BaseController
      */
     public function actionIndex()
     {
-        return $this->render("index", array_merge(Post::getPageList(), ["menuActive"=>"post"]));
+        return $this->render("index", array_merge(Post::getPageList(), ["menuActive" => "post"]));
     }
 
     /**
@@ -43,6 +43,14 @@ class DefaultController extends BaseController
             $postMod->isNewRecord && $postMod->created_at = time();
             $postMod->updated_at = time();
             if ($postMod->save()) {
+                if ($postMod->isNewRecord) {
+                    $archivesSql = "SELECT * FROM (SELECT FROM_UNIXTIME(created_at, '%Y年%c月') month_archives FROM zb_post ORDER BY created_at DESC) ma GROUP BY ma.month_archives;";
+                    $archivesCommand = Zb::$app->db->createCommand($archivesSql);
+                    $monthArchives = array_map(function ($row) {
+                        return $row["month_archives"];
+                    }, $archivesCommand->queryAll());
+                    Zb::$app->cache->set("monthArchives", $monthArchives);
+                }
                 $return["flag"] = true;
             } else {
                 $return["msg"] = json_encode($postMod->errors);

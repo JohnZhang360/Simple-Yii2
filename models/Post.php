@@ -1,6 +1,7 @@
 <?php
 namespace app\models;
 
+use Zb;
 use zbsoft\db\ActiveRecord;
 use zbsoft\helpers\Pagination;
 use Respect\Validation\Validator;
@@ -37,13 +38,13 @@ class Post extends ActiveRecord
 
     /**
      * 获取分页列表
-     * @param int $pageSize
      * @return array|\zbsoft\db\ActiveRecord[]
      */
-    public static function getPageList($pageSize = 10)
+    public static function getPageList()
     {
+        $perPage = Zb::$app->request->getQueryParam("per-page", 10);
         $data = Post::find()->where("is_delete=:is_delete", [":is_delete" => Post::IS_DELETE_NO]);
-        $pager = new Pagination(['totalCount' => $data->count(), 'pageSize' => $pageSize]);
+        $pager = new Pagination(['totalCount' => $data->count(), 'pageSize' => $perPage]);
         $model = $data->offset($pager->offset)->limit($pager->limit)->orderBy("created_at desc")->all();
         return ["postList" => $model, "pager" => $pager];
     }

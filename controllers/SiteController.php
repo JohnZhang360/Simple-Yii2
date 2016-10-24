@@ -7,6 +7,7 @@ namespace app\controllers;
 
 use app\models\Post;
 use zbsoft\base\Controller;
+use zbsoft\caching\Cache;
 use zbsoft\exception\NotFoundHttpException;
 
 class SiteController extends Controller
