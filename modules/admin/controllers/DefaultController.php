@@ -3,7 +3,10 @@
 namespace app\modules\admin\controllers;
 
 use app\models\Post;
+use app\models\PostFilter;
+use app\models\Tags;
 use Zb;
+use zbsoft\helpers\ArrayHelper;
 use zbsoft\helpers\Json;
 
 /**
@@ -17,7 +20,13 @@ class DefaultController extends BaseController
      */
     public function actionIndex()
     {
-        return $this->render("index", array_merge(Post::getPageList(), ["menuActive" => "post"]));
+        $postFilter = null;
+        $search = Zb::$app->request->getQueryParam("search");
+        if(!empty($search)){
+            $postFilter = new PostFilter();
+            $postFilter->search = $search;
+        }
+        return $this->render("index", ArrayHelper::merge(Post::getPageList(10, $postFilter), ["menuActive" => "post"]));
     }
 
     /**
@@ -34,9 +43,10 @@ class DefaultController extends BaseController
             $postMod->sort = 255;
             $postMod->is_show = Post::IS_SHOW_YES;
         }
+
         if (Zb::$app->request->isPost) {
             $return = ["flag" => false, "msg" => ""];
-            $postAttr = ["title", "content", "sort", "is_show"];
+            $postAttr = ["title", "content", "sort", "is_show", "summary"];
             foreach ($postAttr as $attr) {
                 $postMod->setAttribute($attr, Zb::$app->request->post($attr));
             }
@@ -44,20 +54,29 @@ class DefaultController extends BaseController
             $postMod->updated_at = time();
             if ($postMod->save()) {
                 if ($postMod->isNewRecord) {
-                    $archivesSql = "SELECT * FROM (SELECT FROM_UNIXTIME(created_at, '%Y年%c月') month_archives FROM zb_post ORDER BY created_at DESC) ma GROUP BY ma.month_archives;";
-                    $archivesCommand = Zb::$app->db->createCommand($archivesSql);
-                    $monthArchives = array_map(function ($row) {
-                        return $row["month_archives"];
-                    }, $archivesCommand->queryAll());
-                    Zb::$app->cache->set("monthArchives", $monthArchives);
+                    Post::refreshArchives();
+                }else{
+                    //编辑，先删除之前的标签
+                    $postMod->unlinkAll("tags", true);
                 }
+
+                //关联标签
+                $checkTags = Zb::$app->request->post("tags");
+                if(!empty($checkTags)){
+                    foreach ($checkTags as $tags) {
+                        /* @var Tags $tagsMod */
+                        $tagsMod = Tags::findOne($tags);
+                        $postMod->link("tags", $tagsMod);
+                    }
+                }
+
                 $return["flag"] = true;
             } else {
                 $return["msg"] = json_encode($postMod->errors);
             }
             return Json::encode($return);
         } else {
-            return $this->render("post", ['postMod' => $postMod]);
+            return $this->render("post", ['postMod' => $postMod, "tagsList"=>Tags::find()->all()]);
         }
     }
 
@@ -72,9 +91,7 @@ class DefaultController extends BaseController
         if ($postMod) {
             $postMod->is_delete = Post::IS_DELETE_YES;
             $postMod->update();
-            return $this->redirect(["default/index"]);
-        } else {
-            return "fail";
         }
+        return $this->redirect(["default/index"]);
     }
 }

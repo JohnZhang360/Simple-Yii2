@@ -9,7 +9,7 @@ use zbsoft\helpers\Html;
 <?= $this->render("/layouts/menu-nav", ["menuActive"=>$menuActive]) ?>
 <div class="table-responsive">
     <div class="table-nav">
-        <a href="<?= Url::toRoute("search/post") ?>" role="button" class="btn btn-success">Add</a>
+        <a href="<?= Url::toRoute("search/post") ?>" role="button" class="btn btn-success-outline">Add</a>
     </div>
     <table class="table table-bordered table-hover table-striped">
         <thead>

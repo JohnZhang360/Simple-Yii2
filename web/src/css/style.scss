@@ -6,8 +6,10 @@
 
 /* Sidebar modules for boxing content */
 .sidebar-module {
-  padding: 1rem;
-  /*margin: 0 -1rem 1rem;*/
+  padding: 1rem .5rem;
+  .label-default{
+    cursor: pointer;
+  }
 }
 
 .sidebar-module-inset {
@@ -55,6 +57,10 @@
   .blog-post-meta {
     margin-bottom: 1.25rem;
     color: #999;
+    .label-default{
+      margin-left: .5rem;
+      cursor: pointer;
+    }
   }
 
   .blog-markdown-content{

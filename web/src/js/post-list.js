@@ -13,4 +13,5 @@ jQuery(function () {
             });
         }
     });
+    $(".editormd-html-preview").css("padding", "0");
 });

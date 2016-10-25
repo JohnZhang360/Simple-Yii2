@@ -74,9 +74,6 @@ use zbsoft\exception\UnknownMethodException;
  *
  * @property boolean $isNewRecord Whether the record is new and should be inserted when calling [[save()]].
  *
- * @method ActiveQuery hasMany($class, array $link) see [[BaseActiveRecord::hasMany()]] for more info
- * @method ActiveQuery hasOne($class, array $link) see [[BaseActiveRecord::hasOne()]] for more info
- *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Carsten Brandt <mail@cebe.cc>
  * @since 2.0
@@ -1301,4 +1298,88 @@ class ActiveRecord extends Model
     {
         return new static;
     }
+
+
+    /**
+     * Declares a `has-one` relation.
+     * The declaration is returned in terms of a relational [[ActiveQuery]] instance
+     * through which the related record can be queried and retrieved back.
+     *
+     * A `has-one` relation means that there is at most one related record matching
+     * the criteria set by this relation, e.g., a customer has one country.
+     *
+     * For example, to declare the `country` relation for `Customer` class, we can write
+     * the following code in the `Customer` class:
+     *
+     * ```php
+     * public function getCountry()
+     * {
+     *     return $this->hasOne(Country::className(), ['id' => 'country_id']);
+     * }
+     * ```
+     *
+     * Note that in the above, the 'id' key in the `$link` parameter refers to an attribute name
+     * in the related class `Country`, while the 'country_id' value refers to an attribute name
+     * in the current AR class.
+     *
+     * Call methods declared in [[ActiveQuery]] to further customize the relation.
+     *
+     * @param string $class the class name of the related record
+     * @param array $link the primary-foreign key constraint. The keys of the array refer to
+     * the attributes of the record associated with the `$class` model, while the values of the
+     * array refer to the corresponding attributes in **this** AR class.
+     * @return ActiveQuery the relational query object.
+     */
+    public function hasOne($class, $link)
+    {
+        /* @var $class ActiveRecord */
+        /* @var $query ActiveQuery */
+        $query = $class::find();
+        $query->primaryModel = $this;
+        $query->link = $link;
+        $query->multiple = false;
+        return $query;
+    }
+
+    /**
+     * Declares a `has-many` relation.
+     * The declaration is returned in terms of a relational [[ActiveQuery]] instance
+     * through which the related record can be queried and retrieved back.
+     *
+     * A `has-many` relation means that there are multiple related records matching
+     * the criteria set by this relation, e.g., a customer has many orders.
+     *
+     * For example, to declare the `orders` relation for `Customer` class, we can write
+     * the following code in the `Customer` class:
+     *
+     * ```php
+     * public function getOrders()
+     * {
+     *     return $this->hasMany(Order::className(), ['customer_id' => 'id']);
+     * }
+     * ```
+     *
+     * Note that in the above, the 'customer_id' key in the `$link` parameter refers to
+     * an attribute name in the related class `Order`, while the 'id' value refers to
+     * an attribute name in the current AR class.
+     *
+     * Call methods declared in [[ActiveQuery]] to further customize the relation.
+     *
+     * @param string $class the class name of the related record
+     * @param array $link the primary-foreign key constraint. The keys of the array refer to
+     * the attributes of the record associated with the `$class` model, while the values of the
+     * array refer to the corresponding attributes in **this** AR class.
+     * @return ActiveQuery the relational query object.
+     */
+    public function hasMany($class, $link)
+    {
+        /* @var $class ActiveRecord */
+        /* @var $query ActiveQuery */
+        $query = $class::find();
+        $query->primaryModel = $this;
+        $query->link = $link;
+        $query->multiple = true;
+        return $query;
+    }
+
 }

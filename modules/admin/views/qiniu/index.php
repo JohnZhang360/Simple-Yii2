@@ -11,7 +11,7 @@ use zbsoft\helpers\Url;
 <?php } else { ?>
     <div class="table-responsive">
         <div class="table-nav">
-            <a href="<?= Url::toRoute("qiniu/post") ?>" role="button" class="btn btn-success">Add</a>
+            <a href="<?= Url::toRoute("qiniu/post") ?>" role="button" class="btn btn-success-outline">Add</a>
             <form class="form-inline navbar-form pull-right">
                 <input class="form-control" name="prefix" value="<?=$prefix?>" type="text" placeholder="Search Prefix">
                 <input type="hidden" name="page" value="<?=$page?>" />

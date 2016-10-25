@@ -9,5 +9,6 @@ jQuery(function () {
             htmlDecode: "style,script,iframe",  // you can filter tags decode
             tocm: true,    // Using [TOCM]
         });
+        $(".editormd-html-preview").css("padding", "0");
     }
 });

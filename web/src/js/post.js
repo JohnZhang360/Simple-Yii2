@@ -2,10 +2,17 @@
  * Created by ASUS on 2016/10/21.
  */
 $(function () {
+    var mdLib = $("#formPost").attr("data-md-lib");
+    editormd({
+        id: "editor-md-summary",
+        height: 320,
+        path: mdLib
+    });
+
     editormd({
         id: "editor-md",
         height: 640,
-        path: $("#editor-md").attr("data-lib")
+        path: mdLib
     });
 
     $("#formPost").validate({
@@ -14,6 +21,9 @@ $(function () {
         errorElement: "p",
         rules: {
             "title": {
+                required: true
+            },
+            "summary": {
                 required: true
             },
             "content": {
@@ -26,6 +36,7 @@ $(function () {
         },
         messages: {
             "title": "Please enter title",
+            "summary": "Please enter summary",
             "content": "Please enter content",
             "sort": {
                 required: "Please enter sort",

@@ -114,6 +114,9 @@ h6, .h6 {
 .form-post {
   margin-bottom: 2rem; }
 
+.sub-nav {
+  margin: 1rem 0; }
+
 /*
  * search
  */
@@ -128,5 +131,11 @@ h6, .h6 {
 
 .form-qiniu .pic {
   margin-top: .5rem; }
+
+/*
+ * setting
+ */
+.form-setting {
+  margin-top: 2rem; }
 
 /*# sourceMappingURL=admin.css.map */

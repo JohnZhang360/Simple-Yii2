@@ -68,8 +68,9 @@ h6, .h6 {
  */
 /* Sidebar modules for boxing content */
 .sidebar-module {
-  padding: 1rem;
-  /*margin: 0 -1rem 1rem;*/ }
+  padding: 1rem .5rem; }
+  .sidebar-module .label-default {
+    cursor: pointer; }
 
 .sidebar-module-inset {
   padding: 1rem;
@@ -106,6 +107,9 @@ h6, .h6 {
   .blog-post .blog-post-meta {
     margin-bottom: 1.25rem;
     color: #999; }
+    .blog-post .blog-post-meta .label-default {
+      margin-left: .5rem;
+      cursor: pointer; }
   .blog-post .blog-markdown-content {
     display: none; }
 
@@ -119,7 +123,3 @@ a.list-group-item, button.list-group-item {
   width: 100%;
   color: #555;
   text-align: inherit; }
-
-/*
- * Right Nav
- */

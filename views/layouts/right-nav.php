@@ -1,5 +1,9 @@
 <?php
+use \zbsoft\helpers\Url;
+use app\models\Tags;
+
 $monthArchives = Zb::$app->cache->get("monthArchives");
+$tagsList = Tags::find()->all();
 ?>
 <div class="col-sm-3 offset-sm-1 blog-sidebar">
     <div class="sidebar-module sidebar-module-inset">
@@ -7,13 +11,34 @@ $monthArchives = Zb::$app->cache->get("monthArchives");
         <p>额... <em>没什么写的?好可怕!</em> 一定要尽快不上</p>
     </div>
     <div class="sidebar-module">
-        <h4>Archives</h4>
-        <ol class="list-unstyled">
-            <?php foreach ($monthArchives as $val) { ?>
-                <li><a href="javascript:void(0)" class="list-archives"><?= $val ?></a></li>
-            <?php } ?>
-        </ol>
+        <h4>Search</h4>
+        <form class="form-inline navbar-form" action="<?=Url::toRoute("site/index")?>">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search for..." name="search" value="<?= Zb::$app->request->getQueryParam("search") ?>">
+                <span class="input-group-btn">
+                    <button class="btn btn-secondary" type="submit">Go!</button>
+                </span>
+            </div>
+        </form>
     </div>
+    <?php if(isset($monthArchives) && !empty($monthArchives)){?>
+        <div class="sidebar-module">
+            <h4>Archives</h4>
+            <ol class="list-unstyled">
+                <?php foreach ($monthArchives as $val) { ?>
+                    <li><a href="javascript:void(0)" class="list-archives"><?= $val ?></a></li>
+                <?php } ?>
+            </ol>
+        </div>
+    <?php }?>
+    <?php if(!empty($tagsList)){?>
+        <div class="sidebar-module">
+            <h4>Tags</h4>
+            <?php foreach ($tagsList as $tags) { ?>
+                <span class="label label-default"><?= $tags->tag_name ?></span>
+            <?php } ?>
+        </div>
+    <?php }?>
     <div class="sidebar-module">
         <h4>Elsewhere</h4>
         <ol class="list-unstyled">
