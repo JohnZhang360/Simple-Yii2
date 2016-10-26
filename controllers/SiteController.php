@@ -11,7 +11,7 @@ use app\models\Post;
 use zbsoft\base\Controller;
 use zbsoft\exception\NotFoundHttpException;
 
-class SiteController extends Controller
+class SiteController extends BaseController
 {
     public function actionIndex()
     {

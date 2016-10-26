@@ -7,7 +7,7 @@ namespace zbsoft\helpers;
 
 use zbsoft\base\Object;
 use zbsoft\exception\InvalidConfigException;
-use zbsoft\db\Exception;
+use zbsoft\exception\Exception;
 use zbsoft\exception\InvalidParamException;
 
 /**

@@ -8,7 +8,7 @@ $tagsList = Tags::find()->all();
 <div class="col-sm-3 offset-sm-1 blog-sidebar">
     <div class="sidebar-module sidebar-module-inset">
         <h4>About</h4>
-        <p>额... <em>没什么写的?好可怕!</em> 一定要尽快不上</p>
+        <p><?=$this->context->sysConfig["about"]?></p>
     </div>
     <div class="sidebar-module">
         <h4>Search</h4>

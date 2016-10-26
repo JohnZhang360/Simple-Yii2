@@ -11,6 +11,7 @@ use zbsoft\exception\InvalidParamException;
 use zbsoft\exception\InvalidRouteException;
 use zbsoft\exception\NotFoundHttpException;
 use zbsoft\helpers\Security;
+use zbsoft\log\Dispatcher;
 
 /**
  * Application is the base class for all application classes.
@@ -33,6 +34,7 @@ use zbsoft\helpers\Security;
  * @property View|\zbsoft\base\View $view The view application component that is used to render various view
  * files. This property is read-only.
  * @property Session $session The session component. This property is read-only.
+ *@property Dispatcher $log The log dispatcher application component. This property is read-only.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
@@ -72,6 +74,21 @@ class Application extends Module
      * If this is false, layout will be disabled.
      */
     public $layout = 'main';
+    /**
+     * @var array list of components that should be run during the application [[bootstrap()|bootstrapping process]].
+     *
+     * Each component may be specified in one of the following formats:
+     *
+     * - an application component ID as specified via [[components]].
+     * - a module ID as specified via [[modules]].
+     * - a class name.
+     * - a configuration array.
+     *
+     * During the bootstrapping process, each component will be instantiated. If the component class
+     * implements [[BootstrapInterface]], its [[BootstrapInterface::bootstrap()|bootstrap()]] method
+     * will be also be called.
+     */
+    public $bootstrap = [];
 
     /**
      * @return array 框架核心类(必须加载)
@@ -79,12 +96,14 @@ class Application extends Module
     public function coreComponents()
     {
         return [
+            'log' => ['class' => 'zbsoft\log\Dispatcher'],
             'view' => ['class' => 'zbsoft\base\View'],
             'request' => ['class' => 'zbsoft\base\Request'],
             'response' => ['class' => 'zbsoft\base\Response'],
             'urlManager' => ['class' => 'zbsoft\base\UrlManager'],
             'security' => ['class' => 'zbsoft\helpers\Security'],
             'session' => ['class' => 'zbsoft\base\Session'],
+            'errorHandler' => ['class' => 'zbsoft\base\ErrorHandler'],
         ];
     }
 
@@ -127,6 +146,8 @@ class Application extends Module
         $this->setInstance($this);
 
         $this->preInit($config);
+
+        $this->registerErrorHandler($config);
 
         Object::__construct($config);
     }
@@ -172,6 +193,31 @@ class Application extends Module
         $request = $this->getRequest();
         Zb::setAlias('@webroot', dirname($request->getScriptFile()));
         Zb::setAlias('@web', $request->getBaseUrl());
+        $this->bootstrap();
+    }
+
+    /**
+     * Initializes extensions and executes bootstrap components.
+     * This method is called by [[init()]] after the application has been fully configured.
+     * If you override this method, make sure you also call the parent implementation.
+     */
+    protected function bootstrap()
+    {
+        foreach ($this->bootstrap as $class) {
+            $component = null;
+            if (is_string($class)) {
+                if ($this->has($class)) {
+                    $component = $this->get($class);
+                } elseif ($this->hasModule($class)) {
+                    $component = $this->getModule($class);
+                } elseif (strpos($class, '\\') === false) {
+                    throw new InvalidConfigException("Unknown bootstrapping component ID: $class");
+                }
+            }
+            if (!isset($component)) {
+                Zb::createObject($class);
+            }
+        }
     }
 
     public function run()
@@ -184,6 +230,21 @@ class Application extends Module
         } catch (InvalidRouteException $e) {
             throw new NotFoundHttpException('Page not found.', $e->getCode(), $e);
         }
+    }
+
+    /**
+     * Registers the errorHandler component as a PHP error handler.
+     * @param array $config application config
+     */
+    protected function registerErrorHandler(&$config)
+    {
+        if (!isset($config['components']['errorHandler']['class'])) {
+            echo "Error: no errorHandler component is configured.\n";
+            exit(1);
+        }
+        $this->set('errorHandler', $config['components']['errorHandler']);
+        unset($config['components']['errorHandler']);
+        $this->getErrorHandler()->register();
     }
 
     /**
@@ -306,5 +367,14 @@ class Application extends Module
     public function getUniqueId()
     {
         return '';
+    }
+
+    /**
+     * Returns the error handler component.
+     * @return ErrorHandler the error handler application component.
+     */
+    public function getErrorHandler()
+    {
+        return $this->get('errorHandler');
     }
 }

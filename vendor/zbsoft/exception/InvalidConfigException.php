@@ -9,7 +9,7 @@ namespace zbsoft\exception;
  * 配置错误一场
  * @author JohnZhang360
  */
-class InvalidConfigException extends \Exception
+class InvalidConfigException extends Exception
 {
     /**
      * @return string the user-friendly name of this exception

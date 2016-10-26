@@ -128,7 +128,7 @@ class Module extends ServiceLocator
      * @return mixed
      * @throws InvalidRouteException
      */
-    public function runAction($route, $params)
+    public function runAction($route, $params = [])
     {
         $parts = $this->createController($route);
         if (is_array($parts)) {

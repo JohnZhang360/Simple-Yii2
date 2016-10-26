@@ -5,7 +5,7 @@
 
 namespace zbsoft\exception;
 
-class ExitException extends \Exception
+class ExitException extends Exception
 {
     /**
      * @var integer the exit status code

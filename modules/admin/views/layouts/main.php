@@ -10,9 +10,9 @@ use app\models\Admin;
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <title>Zhang Guangjian</title>
+    <title><?=$this->context->sysConfig["site_title"]?></title>
+    <meta name="keywords" content="<?=$this->context->sysConfig["site_keywords"]?>" />
+    <meta name="description" content="<?=$this->context->sysConfig["site_description"]?>" />
     <link rel="icon" href="<?=Url::to("/favicon.ico")?>">
 
     <!-- Bootstrap core CSS -->
@@ -26,14 +26,14 @@ use app\models\Admin;
 <div class="blog-header">
     <div class="container">
         <h1 class="blog-title">
-            <a href="<?=Url::toRoute(["/admin"])?>">Zhang Guangjian</a>
+            <a href="<?=Url::toRoute(["/admin"])?>"><?=$this->context->sysConfig["site_name"]?></a>
             <?php if(Admin::isLogin()){?>
                 <button type="button" class="btn btn-warning logout-btn" id="logout-btn"
                         data-url="<?= Url::toRoute("default/logout") ?>" data-turn="<?= Url::toRoute("public/login") ?>">Logout
                 </button>
             <?php }?>
         </h1>
-        <p class="lead blog-description">Good Good Code, Day Day Up.</p>
+        <p class="lead blog-description"><?=$this->context->sysConfig["signature"]?></p>
     </div>
 </div>
 
@@ -45,8 +45,8 @@ use app\models\Admin;
 
 <footer class="blog-footer">
     <p><a href="#">Back to top</a></p>
-    <p>Copyright©<a href="/">ZhangGuangjian</a>，All Rights Reserved</p>
-    <p>粤ICP备16083517号-1</p>
+    <p>Copyright©<a href="/"><?=$this->context->sysConfig["site_title"]?></a>，All Rights Reserved</p>
+    <p><?=$this->context->sysConfig["site_icp"]?></p>
 </footer>
 
 

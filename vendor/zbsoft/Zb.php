@@ -6,8 +6,13 @@
 use zbsoft\exception\InvalidParamException;
 use zbsoft\exception\InvalidConfigException;
 use zbsoft\di\Container;
+use zbsoft\log\Logger;
 
 defined('ZB_PATH') or define('ZB_PATH', __DIR__);
+/**
+ * Gets the application start timestamp.
+ */
+defined('ZB_BEGIN_TIME') or define('ZB_BEGIN_TIME', microtime(true));
 
 /**
  * 框架里面的通用性函数帮助类
@@ -177,6 +182,113 @@ class Zb
     public static function getObjectVars($object)
     {
         return get_object_vars($object);
+    }
+
+    private static $_logger;
+
+    /**
+     * @return Logger message logger
+     */
+    public static function getLogger()
+    {
+        if (self::$_logger !== null) {
+            return self::$_logger;
+        } else {
+            return self::$_logger = static::createObject('zbsoft\log\Logger');
+        }
+    }
+
+    /**
+     * Sets the logger object.
+     * @param Logger $logger the logger object.
+     */
+    public static function setLogger($logger)
+    {
+        self::$_logger = $logger;
+    }
+
+    /**
+     * Logs a trace message.
+     * Trace messages are logged mainly for development purpose to see
+     * the execution work flow of some code.
+     * @param string $message the message to be logged.
+     * @param string $category the category of the message.
+     */
+    public static function trace($message, $category = 'application')
+    {
+        if (ZB_DEBUG) {
+            static::getLogger()->log($message, Logger::LEVEL_TRACE, $category);
+        }
+    }
+
+    /**
+     * Logs an error message.
+     * An error message is typically logged when an unrecoverable error occurs
+     * during the execution of an application.
+     * @param string $message the message to be logged.
+     * @param string $category the category of the message.
+     */
+    public static function error($message, $category = 'application')
+    {
+        static::getLogger()->log($message, Logger::LEVEL_ERROR, $category);
+    }
+
+    /**
+     * Logs a warning message.
+     * A warning message is typically logged when an error occurs while the execution
+     * can still continue.
+     * @param string $message the message to be logged.
+     * @param string $category the category of the message.
+     */
+    public static function warning($message, $category = 'application')
+    {
+        static::getLogger()->log($message, Logger::LEVEL_WARNING, $category);
+    }
+
+    /**
+     * Logs an informative message.
+     * An informative message is typically logged by an application to keep record of
+     * something important (e.g. an administrator logs in).
+     * @param string $message the message to be logged.
+     * @param string $category the category of the message.
+     */
+    public static function info($message, $category = 'application')
+    {
+        static::getLogger()->log($message, Logger::LEVEL_INFO, $category);
+    }
+
+    /**
+     * Marks the beginning of a code block for profiling.
+     * This has to be matched with a call to [[endProfile]] with the same category name.
+     * The begin- and end- calls must also be properly nested. For example,
+     *
+     * ```php
+     * \Yii::beginProfile('block1');
+     * // some code to be profiled
+     *     \Yii::beginProfile('block2');
+     *     // some other code to be profiled
+     *     \Yii::endProfile('block2');
+     * \Yii::endProfile('block1');
+     * ```
+     * @param string $token token for the code block
+     * @param string $category the category of this log message
+     * @see endProfile()
+     */
+    public static function beginProfile($token, $category = 'application')
+    {
+        static::getLogger()->log($token, Logger::LEVEL_PROFILE_BEGIN, $category);
+    }
+
+    /**
+     * Marks the end of a code block for profiling.
+     * This has to be matched with a previous call to [[beginProfile]] with the same category name.
+     * @param string $token token for the code block
+     * @param string $category the category of this log message
+     * @see beginProfile()
+     */
+    public static function endProfile($token, $category = 'application')
+    {
+        static::getLogger()->log($token, Logger::LEVEL_PROFILE_END, $category);
     }
 }
 

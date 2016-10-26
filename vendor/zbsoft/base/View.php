@@ -18,6 +18,10 @@ class View extends Object
      * @var Controller the context under which the [[renderFile()]] method is being invoked.
      */
     public $context;
+    /**
+     * @var string the page title
+     */
+    public $title;
 
     /**
      * 渲染一个视图

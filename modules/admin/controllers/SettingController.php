@@ -15,10 +15,8 @@ class SettingController extends BaseController
     public function actionIndex()
     {
         if(Zb::$app->request->isPost){
-            var_dump($_POST);
-        }else {
-            $config = new Config();
-            return $this->render("index", ["config" => $config->getAll(), "menuActive" => "setting"]);
+            Config::savePost(Zb::$app->request->post());
         }
+        return $this->render("index", ["config" => Config::getAll(), "menuActive" => "setting"]);
     }
 }

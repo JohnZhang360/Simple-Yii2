@@ -20,9 +20,14 @@ class Config extends ActiveRecord
         return '{{%config}}';
     }
 
+    /**
+     * 获取所有配置项
+     * @return array
+     */
     public static function getAll()
     {
         $allConfig = [];
+        /* @var Config[] $configList */
         $configList = Config::find()->all();
         foreach ($configList as $config) {
             $allConfig[$config->variable] = $config->value;
@@ -30,6 +35,10 @@ class Config extends ActiveRecord
         return $allConfig;
     }
 
+    /**
+     * 获取所有配置项（缓存）
+     * @return array|mixed
+     */
     public static function getAllByCache()
     {
         $configCache = Zb::$app->cache->get("system_config");
@@ -42,6 +51,11 @@ class Config extends ActiveRecord
         }
     }
 
+    /**
+     * 更新配置项
+     * @param $post
+     * @return bool
+     */
     public static function savePost($post)
     {
         $allCache = self::getAll();
