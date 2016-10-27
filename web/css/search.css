@@ -1,0 +1,133 @@
+/*
+ * Style tweaks
+ * --------------------------------------------------
+ */
+html,
+body {
+  height: 100%;
+  overflow: hidden; }
+
+footer {
+  padding: 30px 0; }
+
+.container-fluid {
+  padding: 0;
+  height: 100%; }
+
+.row-offcanvas-left {
+  height: 100%; }
+
+.row-offcanvas-left .list-nav {
+  padding: 0; }
+
+.list-nav .sidebar-offcanvas {
+  position: relative; }
+
+.nav-content {
+  padding: 0;
+  height: 100%; }
+
+.btn-nav {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 999; }
+
+.list-group {
+  text-align: center; }
+
+a.list-group-item {
+  cursor: pointer; }
+
+.list-group-item {
+  border-bottom: none;
+  border-top: none;
+  padding: .75rem .5rem; }
+
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+  background-color: #06b04f;
+  border-color: #06b04f; }
+
+.list-group-item > img {
+  width: 1rem;
+  margin-right: .3rem; }
+
+/*
+ * toggler
+ */
+.nav-toggler {
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+  border: 1px solid #ccc;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  width: 20px;
+  height: 48px;
+  position: absolute;
+  top: 45%;
+  cursor: pointer;
+  -webkit-border-top-right-radius: 4px;
+  -webkit-border-bottom-right-radius: 4px;
+  -moz-border-radius-topright: 4px;
+  -moz-border-radius-bottomright: 4px;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  border-left: 1px solid #fff;
+  -webkit-box-shadow: 1px 0px 8px rgba(0, 0, 0, 0.175);
+  box-shadow: 1px 0px 8px rgba(0, 0, 0, 0.175);
+  z-index: 999;
+  background-color: white;
+  opacity: 0.8;
+  right: -19px;
+  display: none; }
+
+.glyphicon {
+  position: relative;
+  display: inline-block;
+  height: 48px;
+  width: 20px;
+  line-height: 48px;
+  text-align: center; }
+
+.glyphicon-chevron-left:before {
+  font-weight: bold;
+  content: "<"; }
+
+.glyphicon-chevron-right:before {
+  font-weight: bold;
+  content: ">"; }
+
+/*
+ * Off Canvas
+ * --------------------------------------------------
+ */
+@media screen and (max-width: 767px) {
+  .row-offcanvas {
+    position: relative;
+    -webkit-transition: all .25s ease-out;
+    -o-transition: all .25s ease-out;
+    transition: all .25s ease-out; }
+
+  .row-offcanvas-left {
+    left: 0; }
+
+  .row-offcanvas-left .list-nav {
+    left: -50%;
+    /* 6 columns */ }
+
+  .row-offcanvas-left.active {
+    left: 50%;
+    /* 6 columns */ }
+
+  .row-offcanvas-left.active .nav-content {
+    width: 50%; }
+
+  .row-offcanvas-left .list-nav {
+    position: absolute;
+    top: 0;
+    width: 50%;
+    /* 6 columns */ }
+
+  .nav-toggler {
+    display: block; } }
+
+/*# sourceMappingURL=search.css.map */

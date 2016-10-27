@@ -10,6 +10,8 @@ use zbsoft\exception\InvalidConfigException;
 use zbsoft\exception\InvalidParamException;
 use zbsoft\exception\InvalidRouteException;
 use zbsoft\exception\NotFoundHttpException;
+use zbsoft\helpers\Security;
+use zbsoft\log\Dispatcher;
 
 /**
  * Application is the base class for all application classes.
@@ -25,11 +27,14 @@ use zbsoft\exception\NotFoundHttpException;
  * subdirectory under [[basePath]].
  * @property string $timeZone The time zone used by this application.
  * @property string $uniqueId The unique ID of the module. This property is read-only.
+ * @property Security $security The security application component. This property is read-only.
  * @property \zbsoft\base\UrlManager $urlManager The URL manager for this application. This property is read-only.
  * @property string $vendorPath The directory that stores vendor files. Defaults to "vendor" directory under
  * [[basePath]].
  * @property View|\zbsoft\base\View $view The view application component that is used to render various view
  * files. This property is read-only.
+ * @property Session $session The session component. This property is read-only.
+ *@property Dispatcher $log The log dispatcher application component. This property is read-only.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
@@ -64,6 +69,26 @@ class Application extends Module
      * @var string the charset currently used for the application.
      */
     public $charset = 'UTF-8';
+    /**
+     * @var string|boolean the layout that should be applied for views in this application. Defaults to 'main'.
+     * If this is false, layout will be disabled.
+     */
+    public $layout = 'main';
+    /**
+     * @var array list of components that should be run during the application [[bootstrap()|bootstrapping process]].
+     *
+     * Each component may be specified in one of the following formats:
+     *
+     * - an application component ID as specified via [[components]].
+     * - a module ID as specified via [[modules]].
+     * - a class name.
+     * - a configuration array.
+     *
+     * During the bootstrapping process, each component will be instantiated. If the component class
+     * implements [[BootstrapInterface]], its [[BootstrapInterface::bootstrap()|bootstrap()]] method
+     * will be also be called.
+     */
+    public $bootstrap = [];
 
     /**
      * @return array 框架核心类(必须加载)
@@ -71,9 +96,14 @@ class Application extends Module
     public function coreComponents()
     {
         return [
+            'log' => ['class' => 'zbsoft\log\Dispatcher'],
             'view' => ['class' => 'zbsoft\base\View'],
             'request' => ['class' => 'zbsoft\base\Request'],
+            'response' => ['class' => 'zbsoft\base\Response'],
             'urlManager' => ['class' => 'zbsoft\base\UrlManager'],
+            'security' => ['class' => 'zbsoft\helpers\Security'],
+            'session' => ['class' => 'zbsoft\base\Session'],
+            'errorHandler' => ['class' => 'zbsoft\base\ErrorHandler'],
         ];
     }
 
@@ -117,11 +147,13 @@ class Application extends Module
 
         $this->preInit($config);
 
+        $this->registerErrorHandler($config);
+
         Object::__construct($config);
     }
 
     /**
-     * 将核心类预加载到配置变量中
+     * 将核心类预加载到配置变量中待初始化
      * @param $config
      * @throws InvalidConfigException
      */
@@ -153,16 +185,66 @@ class Application extends Module
         }
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function init()
+    {
+        $request = $this->getRequest();
+        Zb::setAlias('@webroot', dirname($request->getScriptFile()));
+        Zb::setAlias('@web', $request->getBaseUrl());
+        $this->bootstrap();
+    }
+
+    /**
+     * Initializes extensions and executes bootstrap components.
+     * This method is called by [[init()]] after the application has been fully configured.
+     * If you override this method, make sure you also call the parent implementation.
+     */
+    protected function bootstrap()
+    {
+        foreach ($this->bootstrap as $class) {
+            $component = null;
+            if (is_string($class)) {
+                if ($this->has($class)) {
+                    $component = $this->get($class);
+                } elseif ($this->hasModule($class)) {
+                    $component = $this->getModule($class);
+                } elseif (strpos($class, '\\') === false) {
+                    throw new InvalidConfigException("Unknown bootstrapping component ID: $class");
+                }
+            }
+            if (!isset($component)) {
+                Zb::createObject($class);
+            }
+        }
+    }
+
     public function run()
     {
         try {
             list($route, $params) = $this->getRequest()->resolve();
-            $response = new Response();
+            $response = $this->getResponse();
             $response->content = $this->runAction($route, $params);
             $response->send();
         } catch (InvalidRouteException $e) {
             throw new NotFoundHttpException('Page not found.', $e->getCode(), $e);
         }
+    }
+
+    /**
+     * Registers the errorHandler component as a PHP error handler.
+     * @param array $config application config
+     */
+    protected function registerErrorHandler(&$config)
+    {
+        if (!isset($config['components']['errorHandler']['class'])) {
+            echo "Error: no errorHandler component is configured.\n";
+            exit(1);
+        }
+        $this->set('errorHandler', $config['components']['errorHandler']);
+        unset($config['components']['errorHandler']);
+        $this->getErrorHandler()->register();
     }
 
     /**
@@ -195,7 +277,7 @@ class Application extends Module
 
     /**
      * 获取视图对象
-     * @return View|\zbsoft\base\View the view application component that is used to render various view files.
+     * @return \zbsoft\base\View the view application component that is used to render various view files.
      */
     public function getView()
     {
@@ -235,5 +317,64 @@ class Application extends Module
     public function getDb()
     {
         return $this->get('db');
+    }
+
+    private $_homeUrl;
+
+    /**
+     * @return string the homepage URL
+     */
+    public function getHomeUrl()
+    {
+        if ($this->_homeUrl === null) {
+            return $this->getRequest()->getBaseUrl() . '/';
+        } else {
+            return $this->_homeUrl;
+        }
+    }
+
+    /**
+     * @param string $value the homepage URL
+     */
+    public function setHomeUrl($value)
+    {
+        $this->_homeUrl = $value;
+    }
+
+    /**
+     * Returns the security component.
+     * @return Security the security application component.
+     */
+    public function getSecurity()
+    {
+        return $this->get('security');
+    }
+
+    /**
+     * Returns the session component.
+     * @return Session the session component.
+     */
+    public function getSession()
+    {
+        return $this->get('session');
+    }
+
+    /**
+     * Returns an ID that uniquely identifies this module among all modules within the current application.
+     * Since this is an application instance, it will always return an empty string.
+     * @return string the unique ID of the module.
+     */
+    public function getUniqueId()
+    {
+        return '';
+    }
+
+    /**
+     * Returns the error handler component.
+     * @return ErrorHandler the error handler application component.
+     */
+    public function getErrorHandler()
+    {
+        return $this->get('errorHandler');
     }
 }

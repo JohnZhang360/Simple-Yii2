@@ -8,7 +8,7 @@ namespace zbsoft\exception;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class NotSupportedException extends \Exception
+class NotSupportedException extends Exception
 {
     /**
      * @return string the user-friendly name of this exception

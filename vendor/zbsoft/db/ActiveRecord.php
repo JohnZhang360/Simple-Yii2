@@ -74,9 +74,6 @@ use zbsoft\exception\UnknownMethodException;
  *
  * @property boolean $isNewRecord Whether the record is new and should be inserted when calling [[save()]].
  *
- * @method ActiveQuery hasMany($class, array $link) see [[BaseActiveRecord::hasMany()]] for more info
- * @method ActiveQuery hasOne($class, array $link) see [[BaseActiveRecord::hasOne()]] for more info
- *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @author Carsten Brandt <mail@cebe.cc>
  * @since 2.0
@@ -149,6 +146,24 @@ class ActiveRecord extends Model
     public static function getDb()
     {
         return Zb::$app->getDb();
+    }
+
+    /**
+     * @inheritdoc
+     * @return static|null ActiveRecord instance matching the condition, or `null` if nothing matches.
+     */
+    public static function findOne($condition)
+    {
+        return static::findByCondition($condition)->one();
+    }
+
+    /**
+     * @inheritdoc
+     * @return static[] an array of ActiveRecord instances, or an empty array if nothing matches.
+     */
+    public static function findAll($condition)
+    {
+        return static::findByCondition($condition)->all();
     }
 
     /**
@@ -383,10 +398,18 @@ class ActiveRecord extends Model
      *
      * This method performs the following steps in order:
      *
+     * 1. call [[beforeValidate()]] when `$runValidation` is true. If [[beforeValidate()]]
+     *    returns `false`, the rest of the steps will be skipped;
+     * 2. call [[afterValidate()]] when `$runValidation` is true. If validation
+     *    failed, the rest of the steps will be skipped;
      * 3. call [[beforeSave()]]. If [[beforeSave()]] returns `false`,
      *    the rest of the steps will be skipped;
      * 4. insert the record into database. If this fails, it will skip the rest of the steps;
      * 5. call [[afterSave()]];
+     *
+     * In the above step 1, 2, 3 and 5, events [[EVENT_BEFORE_VALIDATE]],
+     * [[EVENT_AFTER_VALIDATE]], [[EVENT_BEFORE_INSERT]], and [[EVENT_AFTER_INSERT]]
+     * will be raised by the corresponding methods.
      *
      * Only the [[dirtyAttributes|changed attribute values]] will be inserted into database.
      *
@@ -402,13 +425,20 @@ class ActiveRecord extends Model
      * $customer->insert();
      * ```
      *
+     * @param boolean $runValidation whether to perform validation (calling [[validate()]])
+     * before saving the record. Defaults to `true`. If the validation fails, the record
+     * will not be saved to the database and this method will return `false`.
      * @param array $attributes list of attributes that need to be saved. Defaults to null,
      * meaning all attributes that are loaded from DB will be saved.
      * @return boolean whether the attributes are valid and the record is inserted successfully.
      * @throws \Exception in case insert failed.
      */
-    public function insert($attributes = null)
+    public function insert($runValidation = true, $attributes = null)
     {
+        if ($runValidation && !$this->validate()) {
+            return false;
+        }
+
         return $this->insertInternal($attributes);
     }
 
@@ -520,7 +550,9 @@ class ActiveRecord extends Model
      *     // update failed
      * }
      * ```
-     *
+     * @param boolean $runValidation whether to perform validation (calling [[validate()]])
+     * before saving the record. Defaults to `true`. If the validation fails, the record
+     * will not be saved to the database and this method will return `false`.
      * @param array $attributeNames list of attributes that need to be saved. Defaults to null,
      * meaning all attributes that are loaded from DB will be saved.
      * @return integer|boolean the number of rows affected, or false if validation fails
@@ -529,8 +561,11 @@ class ActiveRecord extends Model
      * being updated is outdated.
      * @throws \Exception in case update failed.
      */
-    public function update($attributeNames = null)
+    public function update($runValidation = true, $attributeNames = null)
     {
+        if ($runValidation && !$this->validate()) {
+            return false;
+        }
         return $this->updateInternal($attributeNames);
     }
 
@@ -543,6 +578,9 @@ class ActiveRecord extends Model
     protected function updateInternal($attributes = null)
     {
         $values = $this->getDirtyAttributes($attributes);
+        if (empty($values)) {
+            return 0;
+        }
         $condition = $this->getOldPrimaryKey(true);
         $lock = $this->optimisticLock();
         if ($lock !== null) {
@@ -990,17 +1028,19 @@ class ActiveRecord extends Model
      * $customer->email = $email;
      * $customer->save();
      * ```
-     *
+     * @param boolean $runValidation whether to perform validation (calling [[validate()]])
+     * before saving the record. Defaults to `true`. If the validation fails, the record
+     * will not be saved to the database and this method will return `false`.
      * @param array $attributeNames list of attribute names that need to be saved. Defaults to null,
      * meaning all attributes that are loaded from DB will be saved.
      * @return boolean whether the saving succeeded (i.e. no validation errors occurred).
      */
-    public function save($attributeNames = null)
+    public function save($runValidation = true, $attributeNames = null)
     {
         if ($this->getIsNewRecord()) {
-            return $this->insert($attributeNames);
+            return $this->insert($runValidation, $attributeNames);
         } else {
-            return $this->update($attributeNames) !== false;
+            return $this->update($runValidation, $attributeNames) !== false;
         }
     }
 
@@ -1258,4 +1298,88 @@ class ActiveRecord extends Model
     {
         return new static;
     }
+
+
+    /**
+     * Declares a `has-one` relation.
+     * The declaration is returned in terms of a relational [[ActiveQuery]] instance
+     * through which the related record can be queried and retrieved back.
+     *
+     * A `has-one` relation means that there is at most one related record matching
+     * the criteria set by this relation, e.g., a customer has one country.
+     *
+     * For example, to declare the `country` relation for `Customer` class, we can write
+     * the following code in the `Customer` class:
+     *
+     * ```php
+     * public function getCountry()
+     * {
+     *     return $this->hasOne(Country::className(), ['id' => 'country_id']);
+     * }
+     * ```
+     *
+     * Note that in the above, the 'id' key in the `$link` parameter refers to an attribute name
+     * in the related class `Country`, while the 'country_id' value refers to an attribute name
+     * in the current AR class.
+     *
+     * Call methods declared in [[ActiveQuery]] to further customize the relation.
+     *
+     * @param string $class the class name of the related record
+     * @param array $link the primary-foreign key constraint. The keys of the array refer to
+     * the attributes of the record associated with the `$class` model, while the values of the
+     * array refer to the corresponding attributes in **this** AR class.
+     * @return ActiveQuery the relational query object.
+     */
+    public function hasOne($class, $link)
+    {
+        /* @var $class ActiveRecord */
+        /* @var $query ActiveQuery */
+        $query = $class::find();
+        $query->primaryModel = $this;
+        $query->link = $link;
+        $query->multiple = false;
+        return $query;
+    }
+
+    /**
+     * Declares a `has-many` relation.
+     * The declaration is returned in terms of a relational [[ActiveQuery]] instance
+     * through which the related record can be queried and retrieved back.
+     *
+     * A `has-many` relation means that there are multiple related records matching
+     * the criteria set by this relation, e.g., a customer has many orders.
+     *
+     * For example, to declare the `orders` relation for `Customer` class, we can write
+     * the following code in the `Customer` class:
+     *
+     * ```php
+     * public function getOrders()
+     * {
+     *     return $this->hasMany(Order::className(), ['customer_id' => 'id']);
+     * }
+     * ```
+     *
+     * Note that in the above, the 'customer_id' key in the `$link` parameter refers to
+     * an attribute name in the related class `Order`, while the 'id' value refers to
+     * an attribute name in the current AR class.
+     *
+     * Call methods declared in [[ActiveQuery]] to further customize the relation.
+     *
+     * @param string $class the class name of the related record
+     * @param array $link the primary-foreign key constraint. The keys of the array refer to
+     * the attributes of the record associated with the `$class` model, while the values of the
+     * array refer to the corresponding attributes in **this** AR class.
+     * @return ActiveQuery the relational query object.
+     */
+    public function hasMany($class, $link)
+    {
+        /* @var $class ActiveRecord */
+        /* @var $query ActiveQuery */
+        $query = $class::find();
+        $query->primaryModel = $this;
+        $query->link = $link;
+        $query->multiple = true;
+        return $query;
+    }
+
 }

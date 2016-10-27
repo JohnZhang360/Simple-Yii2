@@ -4,6 +4,7 @@ namespace zbsoft\base;
 
 use Zb;
 use zbsoft\di\ServiceLocator;
+use zbsoft\exception\InvalidParamException;
 use zbsoft\exception\InvalidRouteException;
 
 /**
@@ -48,6 +49,16 @@ class Module extends ServiceLocator
      * @var string the root directory of the module.
      */
     private $_basePath;
+    /**
+     * @var string|boolean the layout that should be applied for views within this module. This refers to a view name
+     * relative to [[layoutPath]]. If this is not set, it means the layout value of the [[module|parent module]]
+     * will be taken. If this is false, layout will be disabled within this module.
+     */
+    public $layout;
+    /**
+     * @var array custom module parameters (name => value).
+     */
+    public $params = [];
 
     /**
      * Constructor.
@@ -117,7 +128,7 @@ class Module extends ServiceLocator
      * @return mixed
      * @throws InvalidRouteException
      */
-    public function runAction($route, $params)
+    public function runAction($route, $params = [])
     {
         $parts = $this->createController($route);
         if (is_array($parts)) {
@@ -183,6 +194,50 @@ class Module extends ServiceLocator
     }
 
     /**
+     * Defines path aliases.
+     * This method calls [[Yii::setAlias()]] to register the path aliases.
+     * This method is provided so that you can define path aliases when configuring a module.
+     * @property array list of path aliases to be defined. The array keys are alias names
+     * (must start with '@') and the array values are the corresponding paths or aliases.
+     * See [[setAliases()]] for an example.
+     * @param array $aliases list of path aliases to be defined. The array keys are alias names
+     * (must start with '@') and the array values are the corresponding paths or aliases.
+     * For example,
+     *
+     * ```php
+     * [
+     *     '@models' => '@app/models', // an existing alias
+     *     '@backend' => __DIR__ . '/../backend',  // a directory
+     * ]
+     * ```
+     */
+    public function setAliases($aliases)
+    {
+        foreach ($aliases as $name => $alias) {
+            Zb::setAlias($name, $alias);
+        }
+    }
+
+    /**
+     * Checks whether the child module of the specified ID exists.
+     * This method supports checking the existence of both child and grand child modules.
+     * @param string $id module ID. For grand child modules, use ID path relative to this module (e.g. `admin/content`).
+     * @return boolean whether the named module exists. Both loaded and unloaded modules
+     * are considered.
+     */
+    public function hasModule($id)
+    {
+        if (($pos = strpos($id, '/')) !== false) {
+            // sub-module
+            $module = $this->getModule(substr($id, 0, $pos));
+
+            return $module === null ? false : $module->hasModule(substr($id, $pos + 1));
+        } else {
+            return isset($this->_modules[$id]);
+        }
+    }
+
+    /**
      * 根据路由路径循环获取各个子模块
      * @param string $id module ID (case-sensitive). To retrieve grand child modules,
      * use ID path relative to this module (e.g. `admin/content`).
@@ -214,6 +269,80 @@ class Module extends ServiceLocator
     }
 
     /**
+     * Adds a sub-module to this module.
+     * @param string $id module ID
+     * @param Module|array|null $module the sub-module to be added to this module. This can
+     * be one of the following:
+     *
+     * - a [[Module]] object
+     * - a configuration array: when [[getModule()]] is called initially, the array
+     *   will be used to instantiate the sub-module
+     * - null: the named sub-module will be removed from this module
+     */
+    public function setModule($id, $module)
+    {
+        if ($module === null) {
+            unset($this->_modules[$id]);
+        } else {
+            $this->_modules[$id] = $module;
+        }
+    }
+
+    /**
+     * Returns the sub-modules in this module.
+     * @param boolean $loadedOnly whether to return the loaded sub-modules only. If this is set false,
+     * then all sub-modules registered in this module will be returned, whether they are loaded or not.
+     * Loaded modules will be returned as objects, while unloaded modules as configuration arrays.
+     * @return array the modules (indexed by their IDs)
+     */
+    public function getModules($loadedOnly = false)
+    {
+        if ($loadedOnly) {
+            $modules = [];
+            foreach ($this->_modules as $module) {
+                if ($module instanceof Module) {
+                    $modules[] = $module;
+                }
+            }
+
+            return $modules;
+        } else {
+            return $this->_modules;
+        }
+    }
+
+    /**
+     * Registers sub-modules in the current module.
+     *
+     * Each sub-module should be specified as a name-value pair, where
+     * name refers to the ID of the module and value the module or a configuration
+     * array that can be used to create the module. In the latter case, [[Yii::createObject()]]
+     * will be used to create the module.
+     *
+     * If a new sub-module has the same ID as an existing one, the existing one will be overwritten silently.
+     *
+     * The following is an example for registering two sub-modules:
+     *
+     * ```php
+     * [
+     *     'comment' => [
+     *         'class' => 'app\modules\comment\CommentModule',
+     *         'db' => 'db',
+     *     ],
+     *     'booking' => ['class' => 'app\modules\booking\BookingModule'],
+     * ]
+     * ```
+     *
+     * @param array $modules modules (id => module configuration or instances)
+     */
+    public function setModules($modules)
+    {
+        foreach ($modules as $id => $module) {
+            $this->_modules[$id] = $module;
+        }
+    }
+
+    /**
      * 根据路径生成控制器实例
      * @param string $id the controller ID
      * @return Controller the newly created controller instance, or null if the controller ID is invalid.
@@ -241,6 +370,20 @@ class Module extends ServiceLocator
     }
 
     /**
+     * 获取*当前模块*中的根路径
+     * @return string the root directory of the module.
+     */
+    public function getBasePath()
+    {
+        if ($this->_basePath === null) {
+            $class = new \ReflectionClass($this);
+            $this->_basePath = dirname($class->getFileName());
+        }
+
+        return $this->_basePath;
+    }
+
+    /**
      * 返回*当前模块*的视图路径
      * @return string the root directory of view files. Defaults to "[[basePath]]/views".
      */
@@ -253,16 +396,25 @@ class Module extends ServiceLocator
     }
 
     /**
-     * 获取*当前模块*中的根路径
-     * @return string the root directory of the module.
+     * 返回当前模块的布局路径
+     * @return string the root directory of layout files. Defaults to "[[viewPath]]/layouts".
      */
-    public function getBasePath()
+    public function getLayoutPath()
     {
-        if ($this->_basePath === null) {
-            $class = new \ReflectionClass($this);
-            $this->_basePath = dirname($class->getFileName());
+        if ($this->_layoutPath !== null) {
+            return $this->_layoutPath;
+        } else {
+            return $this->_layoutPath = $this->getViewPath() . DIRECTORY_SEPARATOR . 'layouts';
         }
+    }
 
-        return $this->_basePath;
+    /**
+     * 设置当前模块的布局路径
+     * @param string $path the root directory or path alias of layout files.
+     * @throws InvalidParamException if the directory is invalid
+     */
+    public function setLayoutPath($path)
+    {
+        $this->_layoutPath = Zb::getAlias($path);
     }
 }

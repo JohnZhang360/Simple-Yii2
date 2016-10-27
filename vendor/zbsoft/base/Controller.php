@@ -7,8 +7,9 @@ namespace zbsoft\base;
 
 use Zb;
 use zbsoft\exception\BadRequestHttpException;
+use zbsoft\exception\InvalidParamException;
 use zbsoft\exception\InvalidRouteException;
-
+use zbsoft\helpers\Url;
 class Controller extends Object
 {
     /**
@@ -32,6 +33,18 @@ class Controller extends Object
      * @var string the root directory that contains view files for this controller.
      */
     private $_viewPath;
+    /**
+     * @var string|boolean the name of the layout to be applied to this controller's views.
+     * This property mainly affects the behavior of [[render()]].
+     * Defaults to null, meaning the actual layout value should inherit that from [[module]]'s layout value.
+     * If false, no layout will be applied.
+     */
+    public $layout;
+    /**
+     * @var Action the action that is currently being executed. This property will be set
+     * by [[run()]] when it is called by [[Application]] to run an action.
+     */
+    public $action;
 
     /**
      * @param string $id the ID of this controller.
@@ -69,6 +82,7 @@ class Controller extends Object
             throw new InvalidRouteException('Unable to resolve the request: ' . $this->getUniqueId() . '/' . $id);
         }
 
+        $this->action = $action;
         // run the action
         return $action->runWithParams($params);
     }
@@ -137,7 +151,7 @@ class Controller extends Object
 
     /**
      * 获取view对象并存到该对象中
-     * @return View|\zbsoft\base\View the view object that can be used to render views or view files.
+     * @return \zbsoft\base\View the view object that can be used to render views or view files.
      */
     public function getView()
     {
@@ -155,7 +169,25 @@ class Controller extends Object
      */
     public function render($view, $params = [])
     {
-        return $this->getView()->render($view, $params, $this);
+        $content = $this->getView()->render($view, $params, $this);
+        return $this->renderContent($content);
+    }
+
+    /**
+     * 返回模板内容
+     * @param string $content the static string being rendered
+     * @return string the rendering result of the layout with the given static string as the `$content` variable.
+     * If the layout is disabled, the string will be returned back.
+     * @since 2.0.1
+     */
+    public function renderContent($content)
+    {
+        $layoutFile = $this->findLayoutFile();
+        if ($layoutFile !== false) {
+            return $this->getView()->renderFile($layoutFile, ['content' => $content], $this);
+        } else {
+            return $content;
+        }
     }
 
     /**
@@ -168,5 +200,141 @@ class Controller extends Object
             $this->_viewPath = $this->module->getViewPath() . DIRECTORY_SEPARATOR . $this->id;
         }
         return $this->_viewPath;
+    }
+
+    /**
+     * 查找模板文件
+     * @return string|boolean the layout file path, or false if layout is not needed.
+     * Please refer to [[render()]] on how to specify this parameter.
+     * @throws InvalidParamException if an invalid path alias is used to specify the layout.
+     */
+    public function findLayoutFile()
+    {
+        $module = $this->module;
+        if (is_string($this->layout)) {
+            $layout = $this->layout;
+        } elseif ($this->layout === null) {
+            //如果当前模块没有layout设置，则获取顶端Module的layout设置
+            while ($module !== null && $module->layout === null) {
+                $module = $module->module;
+            }
+            if ($module !== null && is_string($module->layout)) {
+                $layout = $module->layout;
+            }
+        }
+
+        if (!isset($layout)) {
+            return false;
+        }
+
+        $file = $module->getLayoutPath() . DIRECTORY_SEPARATOR . $layout;
+
+        if (pathinfo($file, PATHINFO_EXTENSION) !== '') {
+            return $file;
+        }
+
+        return $file . '.php';
+    }
+
+
+    /**
+     * Returns the route of the current request.
+     * @return string the route (module ID, controller ID and action ID) of the current request.
+     */
+    public function getRoute()
+    {
+        return $this->action !== null ? $this->action->getUniqueId() : $this->getUniqueId();
+    }
+
+    /**
+     * Redirects the browser to the specified URL.
+     * This method is a shortcut to [[Response::redirect()]].
+     *
+     * You can use it in an action by returning the [[Response]] directly:
+     *
+     * ```php
+     * // stop executing this action and redirect to login page
+     * return $this->redirect(['login']);
+     * ```
+     *
+     * @param string|array $url the URL to be redirected to. This can be in one of the following formats:
+     *
+     * - a string representing a URL (e.g. "http://example.com")
+     * - a string representing a URL alias (e.g. "@example.com")
+     * - an array in the format of `[$route, ...name-value pairs...]` (e.g. `['site/index', 'ref' => 1]`)
+     *   [[Url::to()]] will be used to convert the array into a URL.
+     *
+     * Any relative URL will be converted into an absolute one by prepending it with the host info
+     * of the current request.
+     *
+     * @param integer $statusCode the HTTP status code. Defaults to 302.
+     * See <http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html>
+     * for details about HTTP status code
+     * @return Response the current response object
+     */
+    public function redirect($url, $statusCode = 302)
+    {
+        return Zb::$app->getResponse()->redirect(Url::to($url), $statusCode);
+    }
+
+    /**
+     * Redirects the browser to the home page.
+     *
+     * You can use this method in an action by returning the [[Response]] directly:
+     *
+     * ```php
+     * // stop executing this action and redirect to home page
+     * return $this->goHome();
+     * ```
+     *
+     * @return Response the current response object
+     */
+    public function goHome()
+    {
+        return Zb::$app->getResponse()->redirect(Zb::$app->getHomeUrl());
+    }
+
+    /**
+     * Redirects the browser to the last visited page.
+     *
+     * You can use this method in an action by returning the [[Response]] directly:
+     *
+     * ```php
+     * // stop executing this action and redirect to last visited page
+     * return $this->goBack();
+     * ```
+     *
+     * For this function to work you have to [[User::setReturnUrl()|set the return URL]] in appropriate places before.
+     *
+     * @param string|array $defaultUrl the default return URL in case it was not set previously.
+     * If this is null and the return URL was not set previously, [[Application::homeUrl]] will be redirected to.
+     * Please refer to [[User::setReturnUrl()]] on accepted format of the URL.
+     * @return Response the current response object
+     * @see User::getReturnUrl()
+     */
+    public function goBack($defaultUrl = null)
+    {
+        $backUrl = !empty($defaultUrl) ? $defaultUrl : Zb::$app->request->getHeaders()["HTTP_REFERER"];
+        return Zb::$app->getResponse()->redirect($backUrl);
+    }
+
+    /**
+     * Refreshes the current page.
+     * This method is a shortcut to [[Response::refresh()]].
+     *
+     * You can use it in an action by returning the [[Response]] directly:
+     *
+     * ```php
+     * // stop executing this action and refresh the current page
+     * return $this->refresh();
+     * ```
+     *
+     * @param string $anchor the anchor that should be appended to the redirection URL.
+     * Defaults to empty. Make sure the anchor starts with '#' if you want to specify it.
+     * @return Response the response object itself
+     */
+    public function refresh($anchor = '')
+    {
+        return Zb::$app->getResponse()->redirect(Zb::$app->getRequest()->getUrl() . $anchor);
     }
 }

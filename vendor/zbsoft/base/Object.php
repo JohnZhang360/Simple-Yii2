@@ -87,6 +87,7 @@ class Object implements Configurable
     }
 
     /**
+     * 将配置参数注入到类中
      * Constructor.
      * The default implementation does two things:
      *

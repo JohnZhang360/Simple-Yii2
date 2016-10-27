@@ -479,7 +479,6 @@ class Command extends Object
     public function update($table, $columns, $condition = '', $params = [])
     {
         $sql = $this->db->getQueryBuilder()->update($table, $columns, $condition, $params);
-
         return $this->setSql($sql)->bindValues($params);
     }
 
