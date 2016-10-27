@@ -27,7 +27,7 @@ use zbsoft\base\Response;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class HttpException extends Exception
+class HttpException extends UserException
 {
     /**
      * @var integer HTTP status code, such as 403, 404, 500, etc.
