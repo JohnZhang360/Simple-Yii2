@@ -5,5 +5,21 @@
 * 使用sass编写
 * 组件管理使用bower
 
+
+###使用七牛做文件管理
+* 本地参数文件需以下配置
+```
+return [
+    'cdn' => [
+        'staticUrl' => '',
+        'bucket' => [
+            'default' => ''
+        ],
+        'accessKey' => '',
+        'secretKey' => ''
+    ]
+];
+```
+
 ###Yii2中db模块关系图
 ![Yii2中db模块关系图](http://static.zgjian.cc/post/Analyze_yii2_database_layout.png)
