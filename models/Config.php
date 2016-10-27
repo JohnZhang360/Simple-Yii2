@@ -71,6 +71,8 @@ class Config extends ActiveRecord
                 $configMod->insert();
             }
         }
+        $allConfig = self::getAll();
+        Zb::$app->cache->set("system_config", $allConfig);
         return true;
     }
 }
