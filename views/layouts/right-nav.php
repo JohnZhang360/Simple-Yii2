@@ -42,9 +42,9 @@ $tagsList = Tags::find()->all();
     <div class="sidebar-module">
         <h4>Elsewhere</h4>
         <ol class="list-unstyled">
-            <li><a href="https://github.com/guang-zhang">GitHub</a></li>
-            <li><a href="mailto:johnzhangbkb@gmail.com">Gmail</a></li>
-            <li><a href="http://stackoverflow.com/users/6775018/john-zhang">Stack Overflow</a></li>
+            <li><a href="#">GitHub</a></li>
+            <li><a href="mailto:#">Gmail</a></li>
+            <li><a href="#">Stack Overflow</a></li>
         </ol>
     </div>
 </div><!-- /.blog-sidebar -->
