@@ -224,8 +224,16 @@ class Application extends Module
     {
         try {
             list($route, $params) = $this->getRequest()->resolve();
-            $response = $this->getResponse();
-            $response->content = $this->runAction($route, $params);
+            //如果是重定向直接返回Response对象
+            $result = $this->runAction($route, $params);
+            if ($result instanceof Response) {
+                $response = $result;
+            } else {
+                $response = $this->getResponse();
+                if ($result !== null) {
+                    $response->content = $result;
+                }
+            }
             $response->send();
         } catch (InvalidRouteException $e) {
             throw new NotFoundHttpException('Page not found.', $e->getCode(), $e);
